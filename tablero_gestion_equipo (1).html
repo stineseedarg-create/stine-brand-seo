@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tablero de Gestión de Equipo — Marketing Stine 2026/27</title>
+<style>
+:root{
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --bg:#FAFAF9; --surface-0:#F4F3F1; --surface-1:#FFFFFF; --surface-2:#F7F6F4;
+  --border:#E7E5E1; --border-strong:#D6D3CE; --border-accent:#1C1B19;
+  --text-primary:#1C1B19; --text-secondary:#57534E; --text-muted:#A8A29E;
+  --accent:#B23A1E; --accent-soft:#FBEDE9; --radius:8px;
+  --m1-bg:#FCEBE7; --m1-fg:#B23A1E; --m2-bg:#FAEEDA; --m2-fg:#8A5A0B;
+  --m3-bg:#E4EEF6; --m3-fg:#2C5C86; --m4-bg:#E7F1E3; --m4-fg:#3B6D2E;
+  --m5-bg:#E9E3F4; --m5-fg:#5B4B8A;
+  --na-bg:#F1EFEC; --na-fg:#8C867C; --ok:#3B6D2E; --warn:#8A5A0B; --danger:#B23A1E;
+  --edit:#FBF7EE;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#1A1917; --surface-0:#211F1D; --surface-1:#252320; --surface-2:#2B2925;
+    --border:#38352F; --border-strong:#4A463F; --border-accent:#F2F0EC;
+    --text-primary:#F2F0EC; --text-secondary:#B7B2A9; --text-muted:#847E74;
+    --accent:#E4805F; --accent-soft:#3A2620;
+    --m1-bg:#3A2320; --m1-fg:#E9A08C; --m2-bg:#3A3120; --m2-fg:#E0BC7C;
+    --m3-bg:#202E3A; --m3-fg:#8FBEE0; --m4-bg:#243421; --m4-fg:#9BCB88;
+    --m5-bg:#2C2740; --m5-fg:#BBA8E0; --na-bg:#2A2824; --na-fg:#9A948A; --edit:#302A20;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text-primary);-webkit-font-smoothing:antialiased;line-height:1.5;padding:24px 20px 90px}
+.wrap{max-width:1120px;margin:0 auto}
+svg{display:block}
+.i{width:16px;height:16px;stroke:currentColor;stroke-width:1.75;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.i-sm{width:13px;height:13px}
+button{font-family:inherit}
+input,select,textarea{font-family:inherit}
+
+/* editable inline */
+.edit{outline:none;border-radius:4px;padding:1px 4px;margin:-1px -4px;transition:background .12s;cursor:text}
+.edit:hover{background:var(--edit)}
+.edit:focus{background:var(--edit);box-shadow:0 0 0 2px var(--border-strong)}
+.edit:empty:before{content:attr(data-ph);color:var(--text-muted)}
+.mini{cursor:pointer;background:none;border:none;color:var(--text-muted);padding:2px;border-radius:4px;display:inline-flex}
+.mini:hover{color:var(--text-primary);background:var(--surface-2)}
+.mini.del:hover{color:var(--danger)}
+.addbtn{font-size:12px;font-weight:500;padding:7px 12px;border-radius:8px;border:1px dashed var(--border-strong);background:var(--surface-1);color:var(--text-secondary);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.addbtn:hover{border-color:var(--text-primary);color:var(--text-primary)}
+
+/* header */
+.header{padding-bottom:14px;border-bottom:1px solid var(--border);margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.header .brand-bar{width:34px;height:3px;background:var(--accent);border-radius:3px;margin-bottom:12px}
+.header h1{font-size:21px;font-weight:600;letter-spacing:-0.01em}
+.header p{font-size:12.5px;color:var(--text-secondary);margin-top:5px;max-width:560px}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap}
+.tbtn{font-size:12px;color:var(--text-secondary);background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius);padding:7px 11px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .15s,color .15s}
+.tbtn:hover{border-color:var(--border-strong);color:var(--text-primary)}
+
+/* sheet tabs (como pestañas de Excel) */
+.sheets{display:flex;gap:3px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:20px;align-items:center}
+.sheet-tab{font-size:13px;padding:9px 14px;cursor:pointer;color:var(--text-secondary);border:1px solid transparent;border-bottom:none;border-radius:8px 8px 0 0;margin-bottom:-1px;display:flex;align-items:center;gap:8px;font-weight:500;background:transparent}
+.sheet-tab:hover{color:var(--text-primary);background:var(--surface-2)}
+.sheet-tab.active{color:var(--text-primary);background:var(--surface-1);border-color:var(--border);border-bottom-color:var(--surface-1);font-weight:600}
+.sheet-tab .ini2{width:22px;height:22px;border-radius:50%;background:var(--surface-0);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.sheet-tab.macro{font-weight:600}
+
+/* macro */
+.macro-intro{font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;display:flex;gap:8px;align-items:flex-start}
+.macro-intro svg{margin-top:2px;flex-shrink:0}
+.mtable-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;margin-bottom:16px}
+table.mtable{width:100%;border-collapse:collapse;font-size:12.5px;min-width:720px}
+.mtable th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:600;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap}
+.mtable td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.mtable tr:last-child td{border-bottom:none}
+.mtable .pname{font-weight:600;font-size:13px}
+.mtable .prole{font-size:11.5px;color:var(--text-secondary);margin-top:2px}
+.mtable .openf{font-size:11.5px;color:var(--accent);cursor:pointer;background:none;border:none;padding:0;display:inline-flex;align-items:center;gap:4px}
+.msel{font-size:11.5px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--surface-1);color:var(--text-primary)}
+.mini-in{font-size:12px;padding:4px 7px;border:1px solid var(--border);border-radius:6px;background:var(--surface-1);color:var(--text-primary);width:100%}
+.gd-note{font-size:12px;color:var(--text-secondary);background:var(--surface-1);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.gd-note .tag{font-size:11px;background:var(--surface-0);border:1px solid var(--border);border-radius:16px;padding:2px 9px;color:var(--text-primary)}
+
+/* employee detail */
+.detail-head{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+.initials{width:44px;height:44px;border-radius:50%;background:var(--surface-0);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:var(--text-primary);flex-shrink:0}
+.detail-head h2{font-size:19px;font-weight:600;letter-spacing:-0.01em}
+.detail-head .role{font-size:12.5px;color:var(--text-secondary)}
+.detail-metrics{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px;align-items:center}
+.chip{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;display:inline-flex;align-items:center;gap:5px;background:var(--surface-2);border:1px solid var(--border);color:var(--text-secondary)}
+.chip b{color:var(--text-primary);font-weight:600}
+.chip.mat{background:var(--m2-bg);color:var(--m2-fg);border-color:transparent}
+
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:20px;flex-wrap:wrap}
+.tab{font-size:13px;padding:9px 15px;cursor:pointer;color:var(--text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;align-items:center;gap:7px;font-weight:500}
+.tab.active{color:var(--text-primary);border-bottom-color:var(--border-accent)}
+.tab:hover:not(.active){color:var(--text-primary)}
+.tab-content{display:none}.tab-content.active{display:block}
+
+.hint{font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;display:flex;align-items:flex-start;gap:8px}
+.hint svg{margin-top:2px;flex-shrink:0}
+
+.mbadge{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;letter-spacing:.02em;white-space:nowrap}
+.m1{background:var(--m1-bg);color:var(--m1-fg)}.m2{background:var(--m2-bg);color:var(--m2-fg)}
+.m3{background:var(--m3-bg);color:var(--m3-fg)}.m4{background:var(--m4-bg);color:var(--m4-fg)}
+.m5{background:var(--m5-bg);color:var(--m5-fg)}.mna{background:var(--na-bg);color:var(--na-fg)}
+.sbadge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--surface-0);color:var(--text-secondary);border:1px solid var(--border);white-space:nowrap}
+.estb{font-size:10.5px;font-weight:600;padding:2px 9px;border-radius:16px;white-space:nowrap;border:1px solid transparent}
+.est-sin{background:var(--na-bg);color:var(--na-fg)}.est-curso{background:var(--m3-bg);color:var(--m3-fg)}
+.est-riesgo{background:var(--m2-bg);color:var(--m2-fg)}.est-cumplido{background:var(--m4-bg);color:var(--m4-fg)}
+.est-na{background:var(--surface-0);color:var(--text-muted);border-color:var(--border)}
+
+.rc-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.rc-item,.obj-item{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.obj-item{margin-bottom:10px}
+.rc-header,.obj-header{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer}
+.rc-header:hover,.obj-header:hover{background:var(--surface-2)}
+.rc-num,.obj-w{flex-shrink:0}
+.rc-num{width:26px;height:26px;border-radius:7px;background:var(--surface-0);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.obj-w{width:44px;text-align:center}
+.obj-w .pct{font-size:14px;font-weight:600}
+.obj-w .plbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
+.rc-title,.obj-title{flex:1;min-width:0}
+.rc-title .t,.obj-title .t{font-size:13.5px;font-weight:600;letter-spacing:-0.005em}
+.rc-title .meta,.obj-title .meta{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.chev{color:var(--text-muted);transition:transform .2s}
+.rc-item.open .chev,.obj-item.open .chev{transform:rotate(180deg)}
+.rc-body,.obj-body{display:none}
+.rc-item.open .rc-body,.obj-item.open .obj-body{display:block}
+.rc-body{padding:2px 16px 14px}.obj-body{padding:0 16px 16px}
+.cross{font-size:10.5px;padding:2px 8px;border-radius:16px;font-weight:600;display:inline-flex;align-items:center;gap:4px;background:var(--accent-soft);color:var(--accent)}
+.cross.none{background:var(--surface-0);color:var(--text-muted);border:1px solid var(--border);font-weight:500}
+.avgmat{font-size:10.5px;color:var(--text-secondary);display:inline-flex;align-items:center;gap:4px}
+.tagx{font-size:10.5px;padding:2px 8px;border-radius:16px;background:var(--surface-0);border:1px solid var(--border);color:var(--text-secondary);display:inline-flex;align-items:center;gap:4px}
+
+.edit-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:2px 0 12px;padding:9px 10px;background:var(--surface-2);border-radius:8px}
+.edit-row .lbl{font-size:10.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em}
+.rtitle-edit{font-size:14px;font-weight:600;flex:1;min-width:140px}
+.cross-editor{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.cx{font-size:10.5px;padding:3px 8px;border-radius:14px;border:1px solid var(--border);background:var(--surface-1);color:var(--text-secondary);cursor:pointer}
+.cx.on{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
+
+.task{display:flex;gap:11px;padding:12px 0;border-top:1px solid var(--border)}
+.task:first-child{border-top:none}
+.task-badges{display:flex;flex-direction:column;gap:5px;align-items:flex-start;flex-shrink:0;width:82px}
+.task-body{flex:1;min-width:0}
+.task-body .txt{font-size:12.5px;color:var(--text-primary);line-height:1.55;font-weight:500}
+.task-body .exp{font-size:12px;color:var(--text-secondary);line-height:1.55;margin-top:5px;padding-left:10px;border-left:2px solid var(--border)}
+.task-obs{font-size:11.5px;color:var(--text-secondary);margin-top:6px;display:flex;gap:6px;align-items:flex-start}
+.task-obs svg{margin-top:2px;color:var(--warn);flex-shrink:0}
+.mat-sel{font-size:10.5px;font-weight:700;padding:3px 5px;border-radius:6px;border:1px solid var(--border);cursor:pointer;-webkit-appearance:none;appearance:none;text-align:center}
+.s-sel{font-size:10px;font-weight:600;padding:3px 5px;border-radius:6px;border:1px solid var(--border);background:var(--surface-0);color:var(--text-secondary);cursor:pointer}
+.mprog{font-size:9.5px;color:var(--text-muted);display:inline-flex;align-items:center;gap:2px}
+.tasknote{margin-top:7px;display:flex;gap:6px;align-items:center}
+.tasknote input{flex:1;font-size:11.5px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface-2);color:var(--text-primary)}
+.tasknote input::placeholder{color:var(--text-muted)}
+.stamp{font-size:10px;color:var(--text-muted);white-space:nowrap}
+.task-tools{display:flex;justify-content:flex-end;margin-top:4px}
+
+.pop-summary{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.pop-summary .top{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.pop-summary .big{font-size:26px;font-weight:600;line-height:1}
+.pop-summary .lbl{font-size:11px;color:var(--text-muted)}
+.pop-summary .bono{font-size:18px;font-weight:600;color:var(--text-primary)}
+.pop-summary .counts{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.cbadge{font-size:11px;padding:3px 9px;border-radius:16px;display:inline-flex;gap:5px;align-items:center}
+.cbadge b{font-weight:700}
+
+.track-box{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0}
+.track-row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.track-field{display:flex;flex-direction:column;gap:4px}
+.track-field label{font-size:10.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em}
+.track-field select{font-size:12.5px;padding:6px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface-1);color:var(--text-primary);cursor:pointer;min-width:130px}
+.bit-title{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:6px;margin-bottom:9px}
+.bit-list{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.bit-empty{font-size:12px;color:var(--text-muted);padding:4px 0}
+.bit-entry{display:flex;gap:9px;align-items:flex-start;background:var(--surface-1);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+.bit-mes{font-size:10px;font-weight:700;color:var(--text-secondary);background:var(--surface-0);border-radius:5px;padding:2px 6px;white-space:nowrap;margin-top:1px}
+.bit-txt{flex:1;min-width:0;font-size:12.5px;line-height:1.5}
+.bit-txt .ev{display:block;font-size:11.5px;color:var(--accent);margin-top:3px;word-break:break-word}
+.bit-txt .ev a{color:var(--accent)}
+.bit-form{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.bit-form select,.bit-form input{font-size:12px;padding:7px 9px;border:1px solid var(--border);border-radius:7px;background:var(--surface-1);color:var(--text-primary)}
+.bit-form .txt-in{flex:1;min-width:150px}.bit-form .ev-in{flex:1;min-width:130px}
+.bit-add{font-size:12px;font-weight:500;padding:7px 12px;border-radius:7px;border:1px solid var(--text-primary);background:var(--text-primary);color:var(--bg);cursor:pointer;display:flex;align-items:center;gap:5px}
+
+.smart{font-size:12.5px;color:var(--text-secondary);line-height:1.6;margin:4px 0 12px;padding-left:12px;border-left:2px solid var(--border)}
+.crit-toggle{font-size:11.5px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:6px;padding:6px 0;user-select:none}
+.crit-toggle:hover{color:var(--text-primary)}
+.crit-wrap{display:none;margin-top:6px}.crit-wrap.open{display:block}
+.score-row{display:flex;gap:9px;padding:8px 0;border-top:1px solid var(--border);font-size:12px;line-height:1.5}
+.score-row:first-child{border-top:none}
+.score-n{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.sc4{background:var(--m4-bg);color:var(--m4-fg)}.sc3{background:var(--m3-bg);color:var(--m3-fg)}
+.sc2{background:var(--m2-bg);color:var(--m2-fg)}.sc1{background:var(--m1-bg);color:var(--m1-fg)}
+.score-row .st{color:var(--text-secondary);flex:1}
+.flag{margin-top:12px;background:var(--m2-bg);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text-primary);line-height:1.55;display:flex;gap:8px}
+.flag svg{color:var(--warn);margin-top:1px}
+.s1-box{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:16px}
+.s1-box h4{font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.s1-box ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.s1-box li{font-size:12.5px;color:var(--text-secondary);line-height:1.5;display:flex;gap:8px}
+.s1-box li b{color:var(--text-primary);font-weight:600}
+.s1-box li svg{color:var(--ok);margin-top:2px}
+
+.perfil-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media (max-width:720px){.perfil-grid{grid-template-columns:1fr}}
+.panel{background:var(--surface-1);border:1px solid var(--border);border-radius:12px;padding:15px 16px}
+.panel h3{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:13px}
+.motiv-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.motiv-row .ml{font-size:12px;width:104px;flex-shrink:0;color:var(--text-primary)}
+.motiv-track{flex:1;height:7px;background:var(--surface-0);border-radius:4px;overflow:hidden}
+.motiv-fill{height:100%;background:var(--accent);border-radius:4px}
+.motiv-row .mv{font-size:11px;color:var(--text-muted);width:44px;text-align:right}
+.motiv-row .mv input{width:38px;font-size:11px;padding:2px 4px;border:1px solid var(--border);border-radius:5px;background:var(--surface-1);color:var(--text-primary);text-align:center}
+.strat{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.strat .sl{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.strat li{font-size:12px;color:var(--text-secondary);line-height:1.5;display:flex;gap:8px;margin-bottom:6px;list-style:none}
+.strat li svg{color:var(--accent);margin-top:2px}
+.gap-list{display:flex;flex-direction:column;gap:10px}
+.gap-item{border-left:2px solid var(--warn);padding:2px 0 2px 12px;position:relative}
+.gap-item .gt{font-size:12.5px;font-weight:600;color:var(--text-primary)}
+.gap-item .gd{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-top:3px}
+.gap-item .ge{font-size:11.5px;color:var(--text-muted);line-height:1.5;margin-top:3px;font-style:italic}
+.gap-item .gdel{position:absolute;right:0;top:0}
+.lider-note{background:var(--m2-bg);border-radius:10px;padding:13px 15px;margin-top:14px}
+.lider-note .ll{font-size:11px;font-weight:600;color:var(--warn);text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.lider-note p{font-size:12.5px;color:var(--text-primary);line-height:1.6}
+.matinfo{font-size:12px;color:var(--text-secondary);line-height:1.55}
+.matinfo .ml-row{display:flex;gap:9px;align-items:baseline;margin-bottom:7px}
+.xmap table{width:100%;border-collapse:collapse;font-size:11.5px}
+.xmap th,.xmap td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--border)}
+.xmap th{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);font-weight:600}
+.xmap td .yes{color:var(--accent);font-weight:600}.xmap td .no{color:var(--text-muted)}
+
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;padding:24px;overflow:auto}
+.overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.modal{background:var(--surface-1);border:1px solid var(--border);border-radius:14px;max-width:820px;width:100%;padding:24px;margin:auto}
+.modal h2{font-size:17px;font-weight:600;display:flex;align-items:center;gap:9px}
+.modal .close{margin-left:auto;cursor:pointer;color:var(--text-muted);background:none;border:none}
+.modal-head{display:flex;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.modal-head select{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-1);color:var(--text-primary)}
+.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 6px}
+@media (max-width:600px){.ladder{grid-template-columns:1fr 1fr}}
+.rung{border:1px solid var(--border);border-radius:10px;padding:11px 12px}
+.rung .rc{font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;display:inline-block;margin-bottom:7px}
+.rung .rt{font-size:13px;font-weight:600}
+.rung .rd{font-size:11.5px;color:var(--text-secondary);margin-top:3px;line-height:1.45}
+.modal h3{font-size:13px;font-weight:600;margin:20px 0 8px;display:flex;align-items:center;gap:7px}
+.prof-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.prof-grid{grid-template-columns:1fr}}
+.prof{border:1px solid var(--border);border-radius:10px;padding:11px 12px}
+.prof .pn{font-size:12.5px;font-weight:600;margin-bottom:5px}
+.prof .pd{font-size:11.5px;color:var(--text-secondary);line-height:1.45}
+.prof .pe{font-size:11px;color:var(--text-muted);line-height:1.45;margin-top:6px;padding-top:6px;border-top:1px solid var(--border)}
+.rep-person{border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.rep-person h4{font-size:14px;font-weight:600;display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.rep-obj{padding:9px 0;border-top:1px solid var(--border)}.rep-obj:first-of-type{border-top:none}
+.rep-obj .roh{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.rep-obj .rot{font-size:12.5px;font-weight:600;flex:1;min-width:0}
+.rep-ev{font-size:12px;color:var(--text-secondary);line-height:1.5;margin:5px 0 0;padding-left:12px;border-left:2px solid var(--accent)}
+.rep-ev .ev{color:var(--accent);font-size:11.5px}
+.rep-none{font-size:12px;color:var(--text-muted);padding-left:12px;margin-top:4px}
+.rep-mat{font-size:12px;color:var(--text-secondary);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);line-height:1.6}
+.foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-muted);line-height:1.6}
+.foot code{background:var(--surface-2);padding:1px 5px;border-radius:4px;font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <div class="brand-bar"></div>
+      <h1>Tablero de Gestión de Equipo</h1>
+      <p>Marketing Stine · Campaña 2026/27 — Cada empleado en su hoja + vista macro del equipo. Todo editable; el seguimiento se guarda en tu navegador.</p>
+    </div>
+    <div class="toolbar">
+      <button class="tbtn" onclick="openReport()"><svg class="i i-sm" viewBox="0 0 24 24"><path d="M9 17v-6M12 17V7M15 17v-3"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Reporte mensual</button>
+      <button class="tbtn" onclick="doExport()"><svg class="i i-sm" viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M4 21h16"/></svg>Exportar</button>
+      <button class="tbtn" onclick="document.getElementById('importFile').click()"><svg class="i i-sm" viewBox="0 0 24 24"><path d="M12 15V3M8 7l4-4 4 4M4 21h16"/></svg>Importar</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none" onchange="doImport(this)">
+      <button class="tbtn" onclick="openLegend()"><svg class="i i-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Modelo</button>
+      <button class="tbtn" onclick="resetAll()"><svg class="i i-sm" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Restaurar</button>
+    </div>
+  </div>
+
+  <div class="sheets" id="sheets"></div>
+  <div id="sheetHost"></div>
+  <div class="foot" id="foot"></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeLegend()"><div class="modal" id="modalBody"></div></div>
+<div class="overlay" id="reportOverlay" onclick="if(event.target===this)closeReport()"><div class="modal" id="reportBody"></div></div>
+
+<script>
+/* ===================== ICONS / HELPERS ===================== */
+function icon(n,cls){
+  const p={
+    users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+    target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+    profile:'<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v4l3 2"/>',
+    grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    chevron:'<path d="M6 9l6 6 6-6"/>',
+    flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V4s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22V4"/>',
+    calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+    link:'<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+    alert:'<path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>',
+    check:'<path d="M20 6L9 17l-5-5"/>',
+    arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+    chart:'<path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/>',
+    up:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+    spark:'<path d="M12 3l1.9 5.8L20 10l-5.5 2.1L12 18l-2.5-5.9L4 10l6.1-1.2z"/>',
+    close:'<path d="M18 6 6 18M6 6l12 12"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>',
+    book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/>',
+    open:'<path d="M9 18l6-6-6-6"/>',
+    dot:'<circle cx="12" cy="12" r="4"/>'
+  }[n]||'';
+  return '<svg class="i '+(cls||'')+'" viewBox="0 0 24 24" aria-hidden="true">'+p+'</svg>';
+}
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function isUrl(s){return /^https?:\/\//i.test(s||'');}
+function newId(){return 'e'+Math.floor(performance.now())+'_'+Math.floor((performance.now()*97)%100000);}
+/* editable span */
+function ed(html,handler,cls,ph){return `<span class="edit ${cls||''}" contenteditable="true" data-ph="${ph||''}" onblur="${handler}" onkeydown="ceKey(event)">${html||''}</span>`;}
+function ceKey(e){if(e.key==='Enter'&&!e.shiftKey&&e.target.tagName!=='TEXTAREA'){e.preventDefault();e.target.blur();}}
+function val(el){return el.innerText.replace(/\s+$/,'');}
+
+/* ===================== MESES ===================== */
+const MONTHS=[
+  {v:'2026-07',l:'Jul 2026'},{v:'2026-08',l:'Ago 2026'},{v:'2026-09',l:'Sep 2026'},
+  {v:'2026-10',l:'Oct 2026'},{v:'2026-11',l:'Nov 2026'},{v:'2026-12',l:'Dic 2026'},
+  {v:'2027-01',l:'Ene 2027'},{v:'2027-02',l:'Feb 2027'},{v:'2027-03',l:'Mar 2027'},
+  {v:'2027-04',l:'Abr 2027'},{v:'2027-05',l:'May 2027'},{v:'2027-06',l:'Jun 2027'},
+  {v:'2027-07',l:'Jul 2027'},{v:'2027-08',l:'Ago 2027'}
+];
+const CURRENT_MONTH='2026-07';
+function monthLabel(v){const m=MONTHS.find(x=>x.v===v);return m?m.l:(v||'');}
+
+/* ===================== MODELO ===================== */
+const LADDER=[
+  {c:'M1',cls:'m1',t:'Te enseño',d:'Baja competencia. Necesita instrucción directa: qué hacer y cómo.'},
+  {c:'M2',cls:'m2',t:'Me ayudás',d:'Va agarrando la mano. Ejecuta con apoyo y guía cercana.'},
+  {c:'M3',cls:'m3',t:'Te ayudo',d:'Competente. Trabaja bien; el líder acompaña y respalda.'},
+  {c:'M4',cls:'m4',t:'Vas solo',d:'Autonomía plena. Rinde sin supervisión; delegación total.'}
+];
+const STYLES=[
+  {c:'S1',t:'Dirigir',d:'Mucha dirección, poco apoyo. Para madurez M1.'},
+  {c:'S2',t:'Guiar / Instruir',d:'Mucha dirección y mucho apoyo. Para M2.'},
+  {c:'S3',t:'Apoyar',d:'Poca dirección, mucho apoyo. Para M3.'},
+  {c:'S4',t:'Delegar',d:'Poca dirección, poco apoyo. Para M4.'}
+];
+const PERFILES={
+  Conocimiento:{d:'Busca desafíos y aprendizaje constante. Valora el desarrollo de carrera y el largo plazo. Le motiva capacitar a otros.',e:'Involucrarlo en capacitaciones, compartirle material, considerarlo referente técnico, darle espacio para enseñar.'},
+  Orgullo:{d:'Busca reconocimiento personal y diferenciarse. Le motivan los proyectos unipersonales y de alto nivel.',e:'Escucharlo y darle relevancia, mencionarlo frente a otros, felicitarlo por sus logros (por chicos que sean).'},
+  Seguridad:{d:'Exige que se cumpla lo pactado. Planifica para evitar imprevistos y evita riesgos. Necesita zonas de estabilidad.',e:'Darle tiempo de análisis, no exponerlo, respetar sus silencios, reconocer su detallismo y prudencia.'},
+  Moda:{d:'Le motiva la innovación y las nuevas tendencias. Valora estar en proyectos novedosos.',e:'Hacerlo participar de nuevos desarrollos, escuchar sus ideas y darle feedback sobre implementarlas.'},
+  Interes:{d:'Valora lo que obtiene a cambio. Hace análisis costo/beneficio y valora mucho su tiempo.',e:'Explicar desde el beneficio, ser concreto, dar argumentos sólidos, ir al grano.'},
+  Comodidad:{d:'Valora el confort y el bajo estrés. Prefiere lo conocido y accesible por sobre lo desafiante.',e:'Hacerlo sentir cómodo con tareas y herramientas; avalar su valoración del trabajo afín.'},
+  Afecto:{d:'Fiel a las relaciones. Privilegia lo interpersonal y el clima del grupo. No tolera la indiferencia.',e:'Trato cercano, recordar lo importante para él, escucharlo con humanidad, incluirlo en el grupo.'}
+};
+const PDIMS=['Conocimiento','Orgullo','Seguridad','Moda','Interes','Comodidad','Afecto'];
+const ESTADOS=[{v:'',l:'— Sin definir',cls:'est-sin'},{v:'sin',l:'Sin iniciar',cls:'est-sin'},{v:'curso',l:'En curso',cls:'est-curso'},{v:'riesgo',l:'En riesgo',cls:'est-riesgo'},{v:'cumplido',l:'Cumplido',cls:'est-cumplido'},{v:'na',l:'NA',cls:'est-na'}];
+function estMeta(v){return ESTADOS.find(e=>e.v===(v||''))||ESTADOS[0];}
+function mbadge(code){const c=(code||'na').toLowerCase();return '<span class="mbadge '+(c==='na'?'mna':c)+'">'+(code||'NA')+'</span>';}
+function madCls(code){const c=(code||'na').toLowerCase();return (['m1','m2','m3','m4','m5'].indexOf(c)>=0)?c:'mna';}
+
+/* ===================== DATOS BASE (SEED) ===================== */
+const DEFAULT_PERSONAS=[
+{
+  id:'ac', ini:'AC', nombre:'Alfredo Casaretto', rol:'Responsable de Generación de Demanda · GD',
+  matGlobal:'M2', riesgo:'Medio/Bajo', demanda:'Alta', perfilTxt:'Conocimiento · Seguridad · Afecto',
+  perfil:{Conocimiento:3,Orgullo:1,Seguridad:3,Moda:0,Interes:2,Comodidad:0,Afecto:3},
+  cierre:{prom:'2.83',bono:'80%'},
+  rendiciones:[
+    {title:'Liderazgo del equipo GD',cross:[5],tasks:[
+      {t:'Reporte quincenal del equipo de GD con la cantidad de eventos y acciones llevadas a cabo en zona.',m:'M2',m0:'M1',s:'S1'},
+      {t:'Generar y mantener reuniones semanales con su equipo.',m:'M4',s:'S4'},
+      {t:'Analizar cómo vienen las acciones vs. lo propuesto para el año.',m:'M4',m0:'M1',s:'S1'},
+      {t:'Feedback y evaluación del POP a sus reportes según el calendario de la compañía. Detectar y gestionar conflictos, involucrarse.',m:'M1',s:'S1'},
+      {t:'Acompañar presencialmente al menos 1 vez al mes en giras.',m:'M3',m0:'M1',s:'S2'}]},
+    {title:'Budget GD',cross:[4],tasks:[
+      {t:'Armado y validación del budget anual con el gerente del área, siguiendo el modelo de la empresa.',m:'M4',m0:'M3',s:'S3'},
+      {t:'Seguimiento del budget vs. forecast.',m:'M4',m0:'M3',s:'S3'},
+      {t:'Detección de oportunidades de mejora o crecimiento.',m:'M3',s:'S3'},
+      {t:'Presentación de reporte trimestral del avance de budget.',m:'M3',m0:'M1',s:'S1'},
+      {t:'Analizar las rendiciones de gastos con el líder del área.',m:'M4',m0:'M1',s:'S1'}]},
+    {title:'Red comercial',cross:[1,4],tasks:[
+      {t:'Planificar y ejecutar acciones con el canal.',m:'M3',m0:'M1',s:'S1'},
+      {t:'Reporte de resultado por campaña de GD.',m:'M3',m0:'M1',s:'S1'},
+      {t:'Comprender y capacitar el concepto de Club Stine y Stiner.',m:'M3',s:'S3'},
+      {t:'Generar relacionamiento y presencia en zona con la red comercial.',m:'M3',s:'S3'},
+      {t:'Asegurar la correcta ejecución del PN hacia la red: capacitación, comunicación, planificación, control y resultado.',m:'M3'}]},
+    {title:'Relacionamiento con personas clave',cross:[2],tasks:[
+      {t:'Armar calendario de visitas, validado por el gerente, que refleje los objetivos y la importancia de cada visita para el negocio.',m:'M2'},
+      {t:'Relevar la opinión de asesores y productores clave para generar información sobre quiénes compran.',m:'M2'},
+      {t:'Generar espacios de trabajo con GTM y C&E para definir la acción de fidelización, asegurando que los seleccionados sean de gran importancia.',m:'M2'},
+      {t:'Segmentar o crear un indicador en la base de clientes: quiénes son los asesores y productores clave.',m:'M2'}]},
+    {title:'Redes de terceros',cross:[3],tasks:[
+      {t:'Generar espacios de trabajo con GD y Agronomía para determinar a qué redes ir, cumpliendo el budget propuesto.',m:'M4',m0:'M3',note:'Los ECR no están contemplados en MKT y los terminamos llevando a cabo nosotros.'},
+      {t:'Generar espacios con GD y RTC/Agronomía para dar seguimiento técnico a las redes y definir cómo recorrerlas.',m:'M4',m0:'M3',note:'Hay más presencia de RTC que de Agronomía en los soportes de redes.'},
+      {t:'Detectar el interlocutor clave y realizar acciones 1 a 1 para un relacionamiento más profundo.',m:'M4',m0:'M1',note:'Los disertantes de los ExpoTurbo generalmente son de las redes.'}]},
+    {title:'Comercial — vínculo con Regionales',cross:[4],tasks:[
+      {t:'Fortalecer el vínculo GD con cada RTC / Gerente Regional de la empresa.',m:'M2',m0:'M1',note:'Se organizaron reuniones los lunes con los regionales para organizar los eventos.'},
+      {t:'Seguir siendo proactivo: recabar información y estar atento a novedades del mercado para construir su rol.',m:'M2',m0:'M1'},
+      {t:'Asistir a reuniones regionales.',m:'M2',m0:'M1'}]}
+  ],
+  pop:[
+    {t:'Plan de generación de demanda — Club Stine',peso:'20%',vinc:'Ventas',fecha:'Propuesta 28/02 · Ejecución ciclo',
+     smart:'Diseñar, presentar al CMO y ejecutar el plan de generación de demanda hacia el Club Stine, con foco en el segmento A de multiplicadores. Propuesta escrita antes del 28/02/2027 y ejecución con reporte mensual.',
+     scores:{4:'Propuesta presentada antes del 28/02 sin intervención del CMO. Plan ejecutado con los 4 GDs. Reporte mensual sostenido todo el ciclo. ≥80% de multiplicadores del segmento A con una acción documentada.',3:'Propuesta antes del 28/02 con S1 del CMO en el kickoff. Plan ejecutado con los GDs. Reporte mensual durante al menos 8 meses.',2:'Propuesta con retraso o ejecución parcial sin reporte mensual.',1:'Plan no diseñado o no ejecutado al cierre.'},
+     flag:'Trabaja la brecha del ciclo anterior (Red Soja, score 2, por falta de planificación y reporte). La propuesta tiene que llegar sola: si Casaretto espera que el CMO la arranque, baja el score.'},
+    {t:'Red de asesores y 5 clientes target por Stiner',peso:'20%',vinc:'Ventas + Agronomía',fecha:'Mapeo 30/06 · Visitas Q2-Q3',
+     smart:'Coordinar con los GDs el mapeo completo de la red de asesores por zona (perfil, segmentación, acciones) y mapear 5 clientes target por Stiner. Entrega del mapeo antes del 30/06/2027 y al menos 3 visitas institucionales.',
+     scores:{4:'Mapeo completo antes del 30/06 con perfil detallado. 5 clientes target por Stiner activo. ≥5 visitas institucionales con feedback. Trinidad usa el mapeo para el panel de clientes clave.',3:'Mapeo antes del 30/06 con perfil básico. ≥3 clientes target por Stiner. ≥3 visitas institucionales con feedback.',2:'Mapeo parcial o sin visitas institucionales.',1:'Mapeo no realizado o menos de 1 visita por zona.'},
+     flag:'El mapeo lo hacen los GDs en campo; Casaretto define el criterio, supervisa y consolida. Trinidad recibe el mapeo como insumo (cruce con su POP Obj 2).'},
+    {t:'Redes de terceros — presencia y seguimiento de lotes',peso:'10%',vinc:'Agronomía',fecha:'Sostenido todo el ciclo',
+     smart:'Garantizar presencia activa en eventos de redes CREA, AAPRESID e INTA de cada zona y hacer seguimiento de los lotes presentados. Mínimo 5 eventos por zona en el ciclo.',
+     scores:{4:'≥5 eventos por zona documentados. Seguimiento de lotes en ≥70% con informe. ≥3 asesores referentes nuevos por zona.',3:'≥5 eventos por zona documentados. Seguimiento de lotes en ≥50%.',2:'Menos de 5 eventos por zona o sin seguimiento documentado.',1:'Menos de 3 eventos por zona o sin vínculo con referentes.'},
+     flag:'Fue el objetivo con score 4 en el ciclo anterior. El criterio nuevo agrega seguimiento de lotes: no solo presencia, sino continuidad después del evento.'},
+    {t:'Marketing regional — reuniones, presupuesto, ECRs, Copa Espigón, PN',peso:'20%',vinc:'Ventas + Regionales',fecha:'Reuniones mensuales · Presupuesto Q3',
+     smart:'Cinco componentes que lo consolidan como dueño del marketing regional: (1) reuniones mensuales con cada Regional; (2) presupuesto por zona al cierre de Q3; (3) mapeo de ECRs; (4) Copa Espigón por zona; (5) seguimiento del PN de cada Stiner.',
+     scores:{4:'12 reuniones mensuales documentadas. GDs usan datos de Trinidad. Presupuesto por zona antes del 30/09. ECRs mapeados antes del 30/10. Copa Espigón en las 4 zonas. PN activo en ≥85% de Stiners.',3:'≥10 reuniones. GDs usan datos de Trinidad. Presupuesto documentado. ECRs mapeados. Copa Espigón en las 4 zonas. PN activo en ≥70%.',2:'Menos de 8 reuniones, o presupuesto sin documentar, o Copa Espigón incompleta, o PN sin seguimiento.',1:'Reuniones no realizadas o tres o más componentes sin cumplir.'},
+     flag:'El vínculo con los Regionales es una brecha real. Las reuniones mensuales no son opcionales: si no se realizan, el score baja aunque los otros componentes estén.'},
+    {t:'Liderazgo del equipo GD',peso:'15%',vinc:'Interno',fecha:'Sostenido · Perfiles antes del 31/03',
+     smart:'Gestionar a cada uno de los 4 GDs según su perfil motivacional: construir un tablero de gestión individual, identificar el perfil de cada uno e implementar al menos 4 acciones motivacionales por GD, validadas con el CMO antes de ejecutarlas.',
+     scores:{4:'Tablero de los 4 GDs actualizado mensualmente. Perfiles identificados antes del 31/03. ≥4 acciones motivacionales por GD validadas con el CMO. ≥3 GDs mejoran madurez en al menos una responsabilidad.',3:'Tablero de los 4 GDs construido. Perfiles antes del 31/03. ≥4 acciones motivacionales por GD validadas con el CMO.',2:'Tablero sin actualización mensual, o perfiles tarde, o menos de 4 acciones por GD.',1:'Tablero no construido o acciones no ejecutadas / no validadas.'},
+     flag:'Las acciones motivacionales se validan con el CMO ANTES de ejecutarlas, no se reportan después. Ejecutar sin validar no cuenta para el score.'},
+    {t:'CRM y recorrida — adopción por los Stiners',peso:'15%',vinc:'Ventas + Trinidad',fecha:'Proceso 28/02 · Tasa ≥70% al cierre',
+     smart:'Lograr que los Stiners adopten el CRM y el informe de recorrida como herramienta cotidiana. Casaretto define con Trinidad qué cargar; los GDs lo enseñan y lo exigen en territorio; Trinidad mide la adopción mensual. Meta ≥70% al cierre.',
+     scores:{4:'Proceso definido con Trinidad antes del 28/02. Tasa CRM ≥80% al cierre. Recorrida usada por ≥75% de Stiners. Los GDs corrigen desvíos sin intervención de Casaretto.',3:'Proceso antes del 28/02. Tasa CRM ≥70% al cierre. Recorrida usada por ≥60%.',2:'Proceso con retraso o tasa entre 50% y 69%.',1:'Proceso no definido o tasa menor al 50%.'},
+     flag:'Trinidad mide, Casaretto es responsable del resultado. Si la adopción es baja, el problema es cómo los GDs empujan el proceso en territorio (cruce con POP de Trinidad).'}
+  ],
+  s1:[['Obj 1 (Club Stine)','revisar la propuesta antes del 28/02 y aprobar el plan.'],['Obj 4 (Reuniones)','habilitar y convocar la primera reunión con los Regionales para fijar el formato.'],['Obj 5 (Liderazgo)','validar el perfil motivacional de cada GD antes del 31/03 y las acciones antes de ejecutarlas.'],['Obj 6 (CRM)','facilitar la coordinación inicial con Trinidad para definir el proceso de carga en Q1.']],
+  liderNote:'Casaretto es M3/M4 en territorio: no necesita que le digan cómo, sino para cuándo. El ciclo anterior tuvo S1 irregular, y eso impactó en planificación y reporte. Perfil Seguridad + Conocimiento: reconocer su criterio y prudencia, darle tiempo de análisis y no exponerlo. Su curva de madurez creció de M1 a M3/M4 en varias rendiciones durante el año.',
+  gaps:[]
+},
+{
+  id:'tg', ini:'TG', nombre:'Trinidad Gulland', rol:'Commercial Intelligence & Performance · GTM',
+  matGlobal:'M1', riesgo:'Medio/Bajo', demanda:'Alta', perfilTxt:'Seguridad · Conocimiento',
+  perfil:{Conocimiento:1,Orgullo:0,Seguridad:2,Moda:0,Interes:0,Comodidad:0,Afecto:0},
+  cierre:{prom:'3.25',bono:'110%'},
+  rendiciones:[
+    {title:'Inteligencia comercial — tablero integral',cross:[1],tasks:[
+      {t:'Investigar tableros de este estilo: cómo volcar la información en distintos formatos y qué información es más relevante.',m:'M1'},
+      {t:'Diseñar y volcar la información en el formato elegido.',m:'M2'},
+      {t:'Presentar el formato en una reunión formal del área para recibir feedback.',m:'M2'},
+      {t:'Probar el tablero y recibir feedback junto con Generación de Demanda y el gerente del área.',m:'M1'}]},
+    {title:'Performance de la red comercial — Stiners y multiplicadores',cross:[2],tasks:[
+      {t:'Buscar y juntar información de toda la red comercial de Stine.',m:'na'},
+      {t:'Identificar las variables más relevantes para el negocio y poder medir a Stiners y multiplicadores.',m:'na'},
+      {t:'Elaborar el tablero v1 y presentarlo al gerente del área (define el ranking de los actores).',m:'na'},
+      {t:'Presentar el tablero aprobado a los gerentes de producto.',m:'na'}]},
+    {title:'NPS y percepción de marca (externo)',cross:'none',tasks:[
+      {t:'Investigar qué es un NPS y cómo se mide.',m:'M4'},
+      {t:'Buscar agencias que ofrezcan este servicio y contactarlas.',m:'M4'},
+      {t:'Traer las propuestas, entenderlas y poder explicarlas al gerente de marketing.',m:'M2'},
+      {t:'Dar feedback a los proveedores (preseleccionados y descartados).',m:'M2'},
+      {t:'Dar seguimiento al trabajo de las agencias y acompañar la presentación final de resultados ante gerencia.',m:'M4'}]},
+    {title:'NPS del negocio (interno)',cross:'none',tasks:[
+      {t:'Adaptar la metodología del NPS para implementarla en la red de Stiners.',m:'na'},
+      {t:'Implementar las acciones de esta metodología.',m:'na'},
+      {t:'Analizar los resultados obtenidos.',m:'na'},
+      {t:'Presentar los resultados ante el área de marketing.',m:'na'}]},
+    {title:'Segmentación estratégica y pricing',cross:[2],tasks:[
+      {t:'Relevar información de los datos históricos de los clientes.',m:'na'},
+      {t:'Diseñar una segmentación sugerida según los datos obtenidos.',m:'na'},
+      {t:'Trabajar con el gerente de marketing en una propuesta de estrategia de pricing para la próxima campaña.',m:'na'},
+      {t:'Plasmar los calendarios en uno integrado.',m:'na'}]},
+    {title:'Budget del área',cross:'none',tasks:[
+      {t:'Agrupar los budgets de GD y C&E.',m:'na'},
+      {t:'Plasmar un budget integral del área, alineado con las premisas de Planning.',m:'na'},
+      {t:'Dar seguimiento, asegurando que no haya desvíos respecto a lo definido.',m:'na'}]}
+  ],
+  pop:[
+    {t:'Dashboard operativo + capacitación RTCs + market plans',peso:'20%',vinc:'Ventas',fecha:'30/04/2027',
+     smart:'Poner en producción un dashboard operativo en Looker, co-diseñado con GDs y Regionales, que muestre diariamente lo que necesitan para gestionar su zona. Visitar a los RTCs para garantizar autonomía y colaborar en los market plans trimestrales.',
+     scores:{4:'Dashboard en producción antes del 30/04. Todos lo usan sin necesitar a Trinidad. ≥3 RTCs capacitados presencialmente. Colaboró en los 4 market plans y los Regionales lo reconocen como insumo clave.',3:'Dashboard en producción antes del 30/04. Consultado regularmente. ≥2 RTCs capacitados. Colaboración en market plans documentada.',2:'Dashboard con retraso o adopción parcial. Capacitación no realizada.',1:'Dashboard no entregado o no usado.'},
+     flag:'El criterio no es "dashboard entregado" sino "dashboard usado". Si nadie lo consulta, no cumplió. Trinidad es responsable de que el equipo entienda la herramienta.'},
+    {t:'Mapa de 20 clientes clave por zona + panel Looker',peso:'15%',vinc:'Ventas + GDs + Regionales',fecha:'30/06/2027',
+     smart:'Coordinar con los 4 GDs y Regionales el mapeo de los 20 clientes/asesores clave de cada zona (potencial, comportamiento, customer share, riesgo) y construir un panel en Looker con evolución, alertas y oportunidades.',
+     scores:{4:'Panel antes del 30/06 con 20 clientes por zona (80 total). ≥3 alertas tempranas que generaron acción de un GD o Regional. Casaretto usa el panel para orientar visitas.',3:'Panel antes del 30/06 con ≥15 clientes por zona. ≥1 alerta temprana con acción concreta.',2:'Panel con retraso o menos de 10 clientes por zona. Sin alertas.',1:'Panel no entregado o mapeo no realizado con GDs y Regionales.'},
+     flag:'El mapeo se hace con los GDs y Regionales, no sola desde la oficina. Ellos conocen los clientes; Trinidad los estructura y los convierte en inteligencia accionable (cruce con POP Obj 2 de Casaretto).'},
+    {t:'Dashboard Red Soja con portal integrado',peso:'20%',vinc:'Ventas + IT',fecha:'30/05/2027',
+     smart:'Desarrollar un dashboard en Looker que integre el portal de soja con ERP y CRM, mostrando volúmenes, comportamiento y potencial por zona, para que el equipo vea el negocio de soja antes de visitarlo.',
+     scores:{4:'Dashboard antes del 30/05 con portal integrado. ≥3 RTCs o Regionales lo usan antes de visitas de soja. Volúmenes actualizados automáticamente.',3:'Dashboard antes del 30/05 con portal integrado. Usado como referencia por el equipo comercial.',2:'Dashboard con retraso o sin integración del portal (solo datos internos).',1:'Dashboard no entregado.'},
+     flag:'Depende parcialmente de IT para el acceso al portal. Si IT no provee acceso en tiempo, Trinidad lo escala al CMO dentro de los 30 días. Si el bloqueo persiste, puede convertirse en NA.'},
+    {t:'Reunión quincenal/mensual + mercado automatizado',peso:'15%',vinc:'Ventas + Operaciones',fecha:'Sostenido todo el ciclo',
+     smart:'Hacerse cargo de la preparación y conducción de las reuniones con Regionales, GDs y Operaciones, alineando demanda, disponibilidad y cobranza con datos. Automatizar la captura de información de mercado.',
+     scores:{4:'Reuniones quincenales durante ≥10 meses. Benchmark disponible automáticamente antes de cada reunión. ≥2 decisiones documentadas usando datos de Trinidad.',3:'Reuniones quincenales durante ≥8 meses. Información de mercado disponible (puede ser semi-automática). Reuniones conducidas analíticamente.',2:'Reuniones con frecuencia irregular o sin información sistemática.',1:'Reuniones no realizadas o Trinidad no conduce la parte analítica.'},
+     flag:'Primer paso hacia el BPR (Business Performance Review) de la Etapa 3 de la hoja de ruta. Si este ciclo funciona, en el próximo se expande a ventas y dirección comercial.'},
+    {t:'Data stewardship + Club Stine + flujo de leads',peso:'15%',vinc:'Interno',fecha:'30/03/2027',
+     smart:'Tres responsabilidades base: calidad de datos en Zoho (≥85% de registros completos antes del 30/03), análisis mensual de categorías Club Stine, y flujo de leads (captura → asignación → SLA → conversión) con asignación en 48hs >80%.',
+     scores:{4:'Registros completos ≥90% antes del 30/03. ≥5 upgrades/intervenciones Club Stine documentadas. Flujo de leads con asignación ≥90% en 48hs toda la campaña.',3:'Registros ≥85% antes del 30/03. ≥3 upgrades/intervenciones. Flujo con asignación ≥80% en 48hs.',2:'Alguno de los tres componentes no alcanza el mínimo.',1:'Dos o más componentes sin cumplir.'},
+     flag:'No es glamoroso pero es lo más importante: sin datos limpios no hay dashboard confiable, sin flujo no hay pipeline visible, sin análisis de Club Stine no hay intervención a tiempo.'},
+    {t:'Automatización: leads web + procesos + evaluación con GDs',peso:'15%',vinc:'Ventas + IT',fecha:'30/06/2027',
+     smart:'Captura automática de leads web y asignación directa a los Stiners; identificar 3 procesos manuales automatizables con propuesta antes del 30/04; evaluar la calidad del dato de leads de eventos junto a los GDs.',
+     scores:{4:'Captura de leads web operativa antes del 30/06. 3 procesos documentados con propuesta antes del 30/04. ≥1 proceso automatizado. Calidad de leads de eventos ≥85%.',3:'Captura semi-automatizada antes del 30/06. 3 procesos documentados antes del 30/04. Evaluación de leads con los GDs.',2:'Solo uno o dos componentes cumplidos.',1:'Sin automatizaciones implementadas o documentadas.'},
+     flag:'La captura web depende de IT para la integración. Si IT no avanza, se escala al CMO. El componente de procesos automatizables es 100% de Trinidad.'}
+  ],
+  s1:[['Obj 1 (Dashboard)','facilitar el acceso a GDs y Regionales para las sesiones de co-diseño en Q1.'],['Obj 3 (Red Soja)','gestionar con IT el acceso al portal de soja en los primeros 30 días del ciclo.'],['Obj 4 (Reunión)','habilitar y convocar las primeras 2 reuniones quincenales para fijar el formato.'],['Obj 6 (Automatización)','gestionar con IT la integración de captura de leads web en Q1-Q2.']],
+  liderNote:'Trinidad es M3/M4: no necesita que le digan cómo, sino para cuándo y con qué recursos. Mejor performance del equipo el ciclo pasado (3.25 / bono 110%) pese a ser la más nueva. Perfil Conocimiento + Seguridad: quiere entender el fundamento de cada número. El riesgo con ella es la subvaloración, no la defensividad: puede no ver lo bien que lo hace. Darle ownership de preguntas estratégicas.',
+  gaps:[]
+},
+{
+  id:'tq', ini:'TQ', nombre:'Tomás Quintana', rol:'Responsable de Branding · Comunicación y Eventos',
+  matGlobal:'M1', riesgo:'Medio/Bajo', demanda:'Alta', perfilTxt:'Orgullo · Afecto · Moda',
+  perfil:{Conocimiento:0,Orgullo:3,Seguridad:0,Moda:1,Interes:0,Comodidad:0,Afecto:2},
+  cierre:{prom:'3.0',bono:'100%'},
+  rendiciones:[
+    {title:'Eventos nacionales',cross:[3],tasks:[
+      {t:'Planificación.',exp:'Desarrollar en un texto: a qué evento vamos, a qué público, qué buscamos, qué exposición de marca y qué estrategia. Calendarizar cada evento con fechas, responsables principales/secundarios y asignación de tareas.',m:'M2'},
+      {t:'Implementación.',exp:'Tener un checklist de cosas clave que no pueden faltar en cada evento, revisado antes de cada uno.',m:'M1'},
+      {t:'Ejecución y seguimiento.',exp:'Post-evento, incluir un espacio de feedback con Juan y los líderes zonales para capitalizar aprendizajes.',m:'M2'}]},
+    {title:'Prensa',cross:[4],tasks:[
+      {t:'Relacionamiento con la agencia.',exp:'Junto con Juan, seleccionar los medios en los que hay que estar según la estrategia de la empresa.',m:'M3'},
+      {t:'Gestión de publicaciones.',exp:'Realizar al menos una acción al mes con periodistas clave de cada medio elegido.',m:'M3'},
+      {t:'Monitoreo de resultados.',exp:'Presentar un informe trimestral con menciones clave, tono y repercusión.',m:'M1'}]},
+    {title:'Comunicación — canales digitales',cross:[5],tasks:[
+      {t:'Gestión de redes sociales.',exp:'Definir en qué redes queremos presencia y cuántas publicaciones al año.',m:'M1'},
+      {t:'Generación de contenido institucional y técnico.',exp:'Analizar los momentos clave del año para compartir contenido técnico y armar un plan de acción.',m:'M1'},
+      {t:'Relacionamiento con la agencia.',exp:'Validar el conjunto de piezas semanalmente y exigir métricas mensuales de interacción y alcance.',m:'M2'},
+      {t:'Nuevos proyectos.',exp:'Calendarizar las acciones de los nuevos proyectos y coordinar con otras áreas el plan de acción.',m:'M1'},
+      {t:'Diseño de piezas internas.',exp:'Relevar la cantidad y el tipo de piezas que solicitan.',m:'M1'}]},
+    {title:'Trade marketing / Identidad visual',cross:[1],tasks:[
+      {t:'Identidad visual de comercios.',exp:'Asegurar que cada proveedor de diseño tenga el manual de marca y haga un doble check con Tomás antes de la acción.',m:'M1'},
+      {t:'Diseño de piezas externas.',exp:'Relevar la cantidad y el tipo de piezas que solicitan.',m:'M2'}]},
+    {title:'Presupuesto de comunicación y prensa',cross:'none',tasks:[
+      {t:'Confección del presupuesto.',exp:'Comprender el criterio y el procedimiento para armar un presupuesto.',m:'M1'},
+      {t:'Seguimiento y análisis de desvíos.',exp:'Revisar el control presupuestario una vez al mes y reunir información para analizar desvíos con Juan.',m:'M1'},
+      {t:'Elaboración de forecast.',exp:'Una vez al año, proyectar junto con Juan si el 2° semestre será igual a lo presupuestado.',m:'M1'}]}
+  ],
+  pop:[
+    {t:'Manual de marca completo',peso:'20%',vinc:'Interno',fecha:'30/09/2026',
+     smart:'Expandir el manual de marca (Stine y Stiner) hasta convertirlo en la referencia profesional del área, funcional para que cualquier persona nueva o agencia trabaje sin necesitar a Tomás. Incluye identidad, tipografías, naming, tono de voz, Look & Feel y templates.',
+     scores:{4:'Entregado antes del 30/09 con todos los módulos. Validado por el CMO. Usado como referencia real por la persona nueva y al menos una agencia.',3:'Entregado antes del 30/09 con los módulos centrales completos. Aplicaciones pueden estar en desarrollo.',2:'Entregado con retraso o con módulos centrales incompletos. No funcional como referencia autónoma.',1:'No entregado o en borrador sin estructura.'},
+     flag:'Absorbe la Identidad Visual del ciclo anterior (que fue NA por absorción del líder). El manual la incluye como módulo, no como objetivo separado.'},
+    {t:'Programa de talleres de comunicación y marca',peso:'15%',vinc:'Ventas · GDs · Agronomía · Stiners',fecha:'Propuesta 30/04 · Ejecución 30/09',
+     smart:'Diseñar, presupuestar, presentar y ejecutar un programa de 6 talleres: 3 internos (tipografías, naming, redes) y 3 para Stiners (estilo Stine, criterios visuales, Canva, edición). Propuesta con presupuesto al CMO antes del 30/04.',
+     scores:{4:'Propuesta con presupuesto antes del 30/04. Los 6 talleres antes del 30/09. Satisfacción ≥4/5. ≥3 Stiners aplicaron cambios documentados.',3:'Propuesta antes del 30/04. Los 6 talleres antes del 30/09. Encuesta de satisfacción realizada.',2:'Propuesta con retraso o menos de 6 talleres.',1:'Programa no diseñado o menos de 3 talleres.'},
+     flag:'Trabaja directamente la brecha de Tomás: arrancar y liderar algo nuevo sin que el CMO lo inicie. Si espera el kickoff del CMO, baja el score. La propuesta tiene que llegar sola.'},
+    {t:'Eventos nacionales con innovación documentada',peso:'20%',vinc:'Ventas + Comercial',fecha:'ExpoAgro feb · Estilo Q3',
+     smart:'Liderar ExpoAgro, Estilo Stine y AgroActiva Armstrong con checklist aprobado por el CMO 15 días antes de cada evento, al menos una innovación documentada por evento y feedback post-evento en 7 días. Desde abril, la persona nueva coordina la logística.',
+     scores:{4:'Los 3 eventos con checklist en tiempo. Una innovación por evento. Feedback en 7 días. La persona nueva coordina logística con autonomía desde abril.',3:'Los 3 eventos con checklist en tiempo. Una innovación por ciclo. Feedback realizado.',2:'Eventos sin checklist en tiempo o sin feedback documentado.',1:'Problemas de ejecución significativos o sin planificación formal.'},
+     flag:'La innovación puede ser de formato, experiencia, contenido o tecnología: lo importante es que esté documentada y no sea lo mismo de siempre.'},
+    {t:'Estrategia de prensa con autonomía',peso:'15%',vinc:'Interno',fecha:'Sostenido todo el ciclo',
+     smart:'Liderar la relación con PAMPA y la aparición en medios del sector con autonomía operativa completa. Mínimo 8 apariciones en medios relevantes. El CMO valida la estrategia al inicio; Tomás ejecuta sin intervención operativa.',
+     scores:{4:'≥10 apariciones. Gestiona PAMPA con autonomía completa. ≥2 notas con resultados técnicos de variedades o híbridos.',3:'8 a 9 apariciones. Gestiona PAMPA con autonomía. El CMO valida al inicio pero no opera.',2:'5 a 7 apariciones o gestión con dependencia operativa del CMO.',1:'Menos de 5 apariciones o no gestiona PAMPA con autonomía.'},
+     flag:'Sostiene el 4 del ciclo anterior. El criterio clave no es solo el número de apariciones: es que Tomás opere autónomamente. Si el CMO tiene que intervenir con PAMPA, baja el score.'},
+    {t:'Comunicación integral — canales digitales',peso:'20%',vinc:'Agronomía + Interno',fecha:'Roll out Q1-Q2',
+     smart:'Definir la estrategia editorial y ejecutar la comunicación en todos los canales: Instagram/Facebook sostenido, TikTok y X lanzados en Q1, mailing y blog con 2 piezas técnicas por mes validadas por Agronomía. Desde marzo la persona nueva produce; Tomás define criterio y supervisa. Métricas a Trinidad mensualmente.',
+     scores:{4:'TikTok y X antes del 31/03. 2 piezas técnicas/mes en mailing y blog durante ≥10 meses, validadas por Agronomía. Instagram/Facebook sostenido. Métricas a Trinidad sin excepción.',3:'TikTok y X antes del 30/04. 2 piezas técnicas/mes durante ≥8 meses, validadas. Calendario sostenido. Métricas reportadas.',2:'TikTok o X sin lanzar, o frecuencia irregular, o contenido sin validación de Agronomía.',1:'Menos de la mitad de los canales activos o frecuencia menor a 1 pieza técnica/mes.'},
+     flag:'El contenido técnico requiere un acuerdo de trabajo con Agronomía (relevamiento y tiempos de validación en Q1). Si Agronomía no entrega en tiempo, Tomás lo escala al CMO, no lo absorbe. Cruce con Trinidad (métricas).'},
+    {t:'Pitch de agencia de cabecera',peso:'10%',vinc:'Ventas + CMO',fecha:'Decisión antes de Q3',
+     smart:'Diseñar y ejecutar el primer proceso formal de selección de agencia de cabecera para proyectos de alto valor. Tomás define el brief con criterios comerciales, convoca 10 agencias, coordina presentaciones y presenta recomendación al CMO antes del 30/07.',
+     scores:{4:'Brief antes del 31/03 con criterios comerciales. 10 agencias convocadas. Presentaciones realizadas. Recomendación antes del 30/07. Agencia en onboarding antes del 30/08.',3:'Brief antes del 30/04. ≥8 agencias convocadas. Recomendación antes del 30/07. Agencia seleccionada antes del 30/08.',2:'Proceso iniciado con menos de 6 agencias o sin recomendación documentada.',1:'Proceso no iniciado o agencia no seleccionada.'},
+     flag:'El brief tiene que incluir criterios del equipo comercial: qué necesita ventas de las campañas. Lucas o un Regional participa en la definición en Q1.'}
+  ],
+  s1:[['Obj 1 (Manual)','kickoff formal en las primeras 2 semanas con estructura y módulos definidos.'],['Obj 2 (Talleres)','revisar la propuesta antes del 30/04 y aprobar el presupuesto.'],['Obj 5 (Comunicación)','coordinar con Agronomía en Q1 el flujo de relevamiento de contenido técnico.'],['Obj 6 (Pitch)','participar en la definición de criterios del brief en Q1 y en la decisión final.']],
+  liderNote:'Tomás entrega muy bien con autonomía en su zona de confort (prensa, eventos), pero necesita que el CMO arranque los proyectos nuevos. Perfil Orgullo + Afecto: dejarlo celebrar sus logros (la prensa es su orgullo), trato cercano, y cuando se marcan brechas, que no se sienta atacado — la dependencia es una brecha, no una condena. Todos los objetivos nuevos del POP 2026/27 tienen S1 desde el inicio para revertir la reactividad.',
+  gaps:[
+    {gt:'Control, orden y falta de visibilidad',gd:'No hay visibilidad de los proyectos si no se los pregunta; le cuesta ordenar los temas y armar un checklist.',ge:'Ej.: no logra armar un checklist de tareas para organizar un evento. Se satura con poco.'},
+    {gt:'Dependencia total',gd:'Le cuesta trabajar solo y sacar un proyecto adelante sin acompañamiento.',ge:'Ej.: Copa Espigón — no logra que el proyecto avance por su cuenta.'},
+    {gt:'Reactivo',gd:'Propone muchas ideas pero le cuesta llevarlas a la realidad. Poca proactividad en la ejecución.',ge:'Necesita S1 activo desde el inicio del proyecto, no desde el rescate.'},
+    {gt:'Criterio estético y técnico',gd:'Requiere correcciones frecuentes en estética/diseño y le cuesta la edición sencilla y las herramientas.',ge:'El Manual de Marca y los talleres apuntan a cerrar esta brecha con criterio documentado.'}]
+}
+];
+const DEFAULT_GD=[{n:'Steffi Maggio',m:'M3'},{n:'Sofía Calamante',m:'M1'}];
+
+/* ===================== DB (mutable + persist) ===================== */
+const LSKEY='stine_tablero_2026_27_v2';
+let DB=loadDB();
+let activeSheet='equipo';
+let activeTab={};
+
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function loadDB(){
+  let d=null;try{d=JSON.parse(localStorage.getItem(LSKEY));}catch(e){}
+  if(!d||!d.personas){d={personas:clone(DEFAULT_PERSONAS),gd:clone(DEFAULT_GD),version:2};}
+  normalize(d);return d;
+}
+function normalize(d){
+  if(!d.gd)d.gd=clone(DEFAULT_GD);
+  (d.personas||[]).forEach(p=>{
+    if(!p.perfil)p.perfil={};PDIMS.forEach(k=>{if(typeof p.perfil[k]!=='number')p.perfil[k]=0;});
+    if(!p.gaps)p.gaps=[];if(!p.s1)p.s1=[];if(!p.cierre)p.cierre={prom:'',bono:''};
+    (p.pop||[]).forEach(o=>{if(o.estado===undefined)o.estado='';if(o.score===undefined)o.score='';if(!o.bitacora)o.bitacora=[];if(!o.scores)o.scores={};});
+    (p.rendiciones||[]).forEach(r=>{if(r.cross===undefined)r.cross='none';(r.tasks||[]).forEach(t=>{if(t.m===undefined)t.m='na';});});
+  });
+}
+function saveDB(){try{localStorage.setItem(LSKEY,JSON.stringify(DB));}catch(e){}}
+function P(pid){return DB.personas.find(x=>x.id===pid);}
+
+/* ===================== CÁLCULOS ===================== */
+function bonoFor(avg){if(avg==null)return '—';if(avg<2.83)return 'Sin bono';if(avg<3.0)return '80%';if(avg<3.25)return '100%';return '110%';}
+function projected(p){let s=0,n=0;(p.pop||[]).forEach(o=>{const v=parseInt(o.score);if(!isNaN(v)){s+=v;n++;}});const avg=n?s/n:null;return {avg:avg,n:n,bono:bonoFor(avg)};}
+function estadoCounts(p){const c={sin:0,curso:0,riesgo:0,cumplido:0,na:0,vacio:0};(p.pop||[]).forEach(o=>{const e=o.estado||'';c[e||'vacio']=(c[e||'vacio']||0)+1;});return c;}
+function matAvg(r){const v=[];(r.tasks||[]).forEach(t=>{const n=parseInt((t.m||'').replace('M',''));if(!isNaN(n))v.push(n);});return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;}
+
+/* ===================== SHEET NAV ===================== */
+function renderSheets(){
+  let html=`<div class="sheet-tab macro ${activeSheet==='equipo'?'active':''}" onclick="goSheet('equipo')">${icon('grid','i-sm')} Equipo (macro)</div>`;
+  DB.personas.forEach(p=>{
+    html+=`<div class="sheet-tab ${activeSheet===p.id?'active':''}" onclick="goSheet('${p.id}')"><span class="ini2">${esc(p.ini)}</span> ${esc(p.nombre.split(' ')[0])} ${esc(p.nombre.split(' ').slice(1).join(' '))}</div>`;
+  });
+  html+=`<div class="sheet-tab" onclick="addPerson()" title="Agregar persona">${icon('plus','i-sm')}</div>`;
+  document.getElementById('sheets').innerHTML=html;
+}
+function goSheet(id){activeSheet=id;renderSheets();renderSheet();window.scrollTo({top:0,behavior:'smooth'});}
+function renderSheet(){
+  if(activeSheet==='equipo')document.getElementById('sheetHost').innerHTML=renderMacro();
+  else{const p=P(activeSheet);if(!p){activeSheet='equipo';return renderSheet();}document.getElementById('sheetHost').innerHTML=renderEmployee(p);}
+}
+
+/* ===================== MACRO ===================== */
+function renderMacro(){
+  const intro=`<div class="macro-intro">${icon('grid','i-sm')}<span>Vista de conjunto del equipo (como la hoja <b>Equipo</b> del Excel). Todos los campos son editables. Entrá a la hoja de cada persona para su POP, rendiciones y perfil.</span></div>`;
+  const rows=DB.personas.map(p=>{
+    const pr=projected(p);
+    const matOpts=['M1','M2','M3','M4','M5'].map(v=>`<option ${v===p.matGlobal?'selected':''}>${v}</option>`).join('');
+    return `<tr>
+      <td><div class="pname">${ed(esc(p.nombre),`setP('${p.id}','nombre',val(this))`)}</div>
+          <div class="prole">${ed(esc(p.rol),`setP('${p.id}','rol',val(this))`)}</div>
+          <button class="openf" onclick="goSheet('${p.id}')">${icon('open','i-sm')} Abrir hoja</button></td>
+      <td><select class="msel" onchange="setP('${p.id}','matGlobal',this.value)">${matOpts}</select></td>
+      <td><input class="mini-in" value="${esc(p.perfilTxt)}" onchange="setP('${p.id}','perfilTxt',this.value)"></td>
+      <td><input class="mini-in" value="${esc(p.riesgo)}" onchange="setP('${p.id}','riesgo',this.value)"></td>
+      <td><input class="mini-in" value="${esc(p.demanda)}" onchange="setP('${p.id}','demanda',this.value)"></td>
+      <td>${pr.avg!=null?('<b>'+(Math.round(pr.avg*100)/100)+'</b> · '+pr.bono):'<span style="color:var(--text-muted)">—</span>'}</td>
+      <td><button class="mini del" title="Eliminar persona" onclick="delPerson('${p.id}')">${icon('trash','i-sm')}</button></td>
+    </tr>`;
+  }).join('');
+  const table=`<div class="mtable-wrap"><table class="mtable"><thead><tr>
+      <th>Persona</th><th>Madurez global</th><th>Perfil motivacional</th><th>Grado de riesgo</th><th>Perfil demanda</th><th>Score proy.</th><th></th>
+    </tr></thead><tbody>${rows}</tbody></table></div>`;
+  const gd=`<div class="gd-note">${icon('users','i-sm')}<span>Equipo de GD que reporta a Casaretto (Obj 5 de su POP):</span>${DB.gd.map((g,i)=>`<span class="tag">${esc(g.n)} · ${esc(g.m)} <button class="mini del" style="padding:0 2px" onclick="delGd(${i})">${icon('close','i-sm')}</button></span>`).join('')}</div>`;
+  const addgd=`<button class="addbtn" onclick="addGd()">${icon('plus','i-sm')} Agregar integrante de GD</button>`;
+  return intro+table+`<button class="addbtn" onclick="addPerson()" style="margin-bottom:16px">${icon('plus','i-sm')} Agregar persona al equipo</button>`+gd+addgd;
+}
+function setP(pid,f,v){P(pid)[f]=v;saveDB();if(f==='nombre'||f==='matGlobal')renderSheets();}
+function addPerson(){
+  const id='p'+Math.floor(performance.now());
+  DB.personas.push({id:id,ini:'--',nombre:'Nueva persona',rol:'Rol · Sector',matGlobal:'M1',riesgo:'',demanda:'',perfilTxt:'',perfil:{Conocimiento:0,Orgullo:0,Seguridad:0,Moda:0,Interes:0,Comodidad:0,Afecto:0},cierre:{prom:'',bono:''},rendiciones:[],pop:[],s1:[],liderNote:'',gaps:[]});
+  saveDB();activeSheet=id;renderSheets();renderSheet();
+}
+function delPerson(pid){const p=P(pid);if(!confirm('¿Eliminar a '+p.nombre+' y toda su información?'))return;DB.personas=DB.personas.filter(x=>x.id!==pid);if(activeSheet===pid)activeSheet='equipo';saveDB();renderSheets();renderSheet();}
+function addGd(){DB.gd.push({n:'Nuevo · GD',m:'M1'});saveDB();renderSheet();}
+function delGd(i){DB.gd.splice(i,1);saveDB();renderSheet();}
+
+/* ===================== EMPLOYEE SHEET ===================== */
+function renderEmployee(p){
+  const tab=activeTab[p.id]||'pop';
+  const iniEd=ed(esc(p.ini),`setP('${p.id}','ini',val(this));renderSheets()`,'', 'AC');
+  return `<div class="detail">
+    <div class="detail-head"><div class="initials">${iniEd}</div>
+      <div><h2>${ed(esc(p.nombre),`setP('${p.id}','nombre',val(this))`)}</h2>
+        <div class="role">${ed(esc(p.rol),`setP('${p.id}','rol',val(this))`)}</div></div></div>
+    <div class="detail-metrics">
+      <span class="chip mat">${icon('up','i-sm')} Madurez global <b>${esc(p.matGlobal)}</b></span>
+      <span class="chip">Riesgo <b>${esc(p.riesgo||'—')}</b></span>
+      <span class="chip">Demanda <b>${esc(p.demanda||'—')}</b></span>
+      <span class="chip">Cierre 25/26 <b>${esc(p.cierre.prom||'—')}${p.cierre.bono?(' · '+esc(p.cierre.bono)):''}</b></span>
+    </div>
+    <div class="tabs">
+      <div class="tab ${tab==='pop'?'active':''}" onclick="switchTab('${p.id}','pop',this)">${icon('target','i-sm')} POP 2026/27 · seguimiento</div>
+      <div class="tab ${tab==='rend'?'active':''}" onclick="switchTab('${p.id}','rend',this)">${icon('check','i-sm')} Rendiciones &amp; madurez</div>
+      <div class="tab ${tab==='perfil'?'active':''}" onclick="switchTab('${p.id}','perfil',this)">${icon('profile','i-sm')} Perfil &amp; gestión</div>
+    </div>
+    <div class="tab-content ${tab==='pop'?'active':''}" id="tc-pop">${renderPop(p)}</div>
+    <div class="tab-content ${tab==='rend'?'active':''}" id="tc-rend">${renderRend(p)}</div>
+    <div class="tab-content ${tab==='perfil'?'active':''}" id="tc-perfil">${renderPerfil(p)}</div>
+  </div>`;
+}
+function switchTab(pid,tab,el){activeTab[pid]=tab;const host=el.closest('.detail');host.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');host.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));host.querySelector('#tc-'+tab).classList.add('active');}
+
+/* ---------- POP ---------- */
+function summaryHtml(p){
+  const pr=projected(p),c=estadoCounts(p);const avgTxt=pr.avg!=null?(Math.round(pr.avg*100)/100):'—';
+  return `<div class="top">
+    <div><div class="lbl">Score proyectado (${pr.n}/${p.pop.length} con score)</div><div class="big">${avgTxt}</div></div>
+    <div><div class="lbl">Bono proyectado</div><div class="bono">${pr.bono}</div></div>
+    <div class="counts">
+      <span class="cbadge est-cumplido"><b>${c.cumplido||0}</b> cumplidos</span>
+      <span class="cbadge est-curso"><b>${c.curso||0}</b> en curso</span>
+      <span class="cbadge est-riesgo"><b>${c.riesgo||0}</b> en riesgo</span>
+      <span class="cbadge est-sin"><b>${(c.sin||0)+(c.vacio||0)}</b> sin iniciar</span>
+    </div></div>`;
+}
+function renderPop(p){
+  const summary=`<div class="pop-summary" id="pop-summary-${p.id}">${summaryHtml(p)}</div>`;
+  const hint=`<div class="hint">${icon('book','i-sm')}<span>Cargá <b>estado</b> y <b>score proyectado</b> por objetivo y sumá evidencia en la <b>bitácora mensual</b>. Los textos también son editables. Todo se guarda solo; <b>Exportá</b> para respaldar.</span></div>`;
+  const objs=p.pop.map((o,i)=>renderObj(p,o,i)).join('');
+  const addObj=`<button class="addbtn" onclick="addObj('${p.id}')">${icon('plus','i-sm')} Agregar objetivo POP</button>`;
+  const s1=`<div class="s1-box"><h4>${icon('check','i-sm')} S1 comprometido por el CMO — 2026/27</h4><ul id="s1-${p.id}">${
+    p.s1.map((x,si)=>`<li>${icon('check','i-sm')}<span><b>${ed(esc(x[0]),`setS1('${p.id}',${si},0,val(this))`)}:</b> ${ed(esc(x[1]),`setS1('${p.id}',${si},1,val(this))`)}</span><button class="mini del" onclick="delS1('${p.id}',${si})">${icon('close','i-sm')}</button></li>`).join('')
+  }</ul><button class="addbtn" style="margin-top:10px" onclick="addS1('${p.id}')">${icon('plus','i-sm')} Agregar compromiso S1</button></div>`;
+  const scale=`<div class="hint" style="margin-top:14px">${icon('chart','i-sm')}<span>Escala de bono: promedio &lt;2.83 sin bono · 2.83 = 80% · 3.0 = 100% · 3.25 = 110%. NA no penaliza el promedio.</span></div>`;
+  return summary+hint+`<div id="objlist-${p.id}">`+objs+`</div>`+addObj+s1+scale;
+}
+function renderObj(p,o,i){
+  const est=estMeta(o.estado);
+  const estOpts=ESTADOS.map(e=>`<option value="${e.v}" ${e.v===(o.estado||'')?'selected':''}>${e.l}</option>`).join('');
+  const scoreOpts=['','1','2','3','4','NA'].map(v=>`<option value="${v}" ${v===(o.score||'')?'selected':''}>${v===''?'— Sin definir':v}</option>`).join('');
+  const scores=[4,3,2,1].map(n=>`<div class="score-row"><div class="score-n sc${n}">${n}</div><div class="st">${ed(esc(o.scores[n]||''),`setCrit('${p.id}',${i},${n},val(this))`,'','Criterio score '+n)}</div></div>`).join('');
+  return `<div class="obj-item" id="obj-${p.id}-${i}">
+    <div class="obj-header" onclick="if(!event.target.closest('.no-toggle'))this.parentNode.classList.toggle('open')">
+      <div class="obj-w"><div class="pct">${esc(o.peso||'')}</div><div class="plbl">peso</div></div>
+      <div class="obj-title"><div class="t">${i+1}. <span id="objt-${p.id}-${i}">${esc(o.t)}</span></div>
+        <div class="meta">
+          <span class="estb ${est.cls}" id="estbadge-${p.id}-${i}">${est.v?est.l:'Sin estado'}</span>
+          <span class="tagx" id="scbadge-${p.id}-${i}">${o.score?('Score '+o.score):'Sin score'}</span>
+          <span class="tagx">${icon('link','i-sm')} ${esc(o.vinc||'')}</span>
+          <span class="tagx">${icon('calendar','i-sm')} ${esc(o.fecha||'')}</span>
+        </div></div>
+      <button class="mini del no-toggle" title="Eliminar objetivo" onclick="delObj('${p.id}',${i})">${icon('trash','i-sm')}</button>
+      ${icon('chevron','chev')}
+    </div>
+    <div class="obj-body">
+      <div class="edit-row"><span class="lbl">Título</span>${ed(esc(o.t),`setObj('${p.id}',${i},'t',val(this));document.getElementById('objt-${p.id}-${i}').innerText=val(this)`,'rtitle-edit')}</div>
+      <div class="edit-row"><span class="lbl">Peso</span>${ed(esc(o.peso||''),`setObj('${p.id}',${i},'peso',val(this))`,'','20%')}
+        <span class="lbl">Vínculo</span>${ed(esc(o.vinc||''),`setObj('${p.id}',${i},'vinc',val(this))`,'','Ventas')}
+        <span class="lbl">Fecha</span>${ed(esc(o.fecha||''),`setObj('${p.id}',${i},'fecha',val(this))`,'','Fecha clave')}</div>
+      <div class="smart">${ed(esc(o.smart||''),`setObj('${p.id}',${i},'smart',val(this))`,'','Definición SMART...')}</div>
+      <div class="track-box no-toggle">
+        <div class="track-row">
+          <div class="track-field"><label>Estado</label><select onchange="setEstado('${p.id}',${i},this.value)">${estOpts}</select></div>
+          <div class="track-field"><label>Score proyectado</label><select onchange="setScore('${p.id}',${i},this.value)">${scoreOpts}</select></div>
+        </div>
+        <div class="bit-title">${icon('book','i-sm')} Bitácora mensual de evidencia</div>
+        <div class="bit-list" id="bit-${p.id}-${i}">${bitListHtml(p,o,i)}</div>
+        <div class="bit-form">
+          <select id="bitmes-${p.id}-${i}">${MONTHS.map(mo=>`<option value="${mo.v}" ${mo.v===CURRENT_MONTH?'selected':''}>${mo.l}</option>`).join('')}</select>
+          <input class="txt-in" id="bittxt-${p.id}-${i}" placeholder="Avance / evidencia del mes...">
+          <input class="ev-in" id="bitev-${p.id}-${i}" placeholder="Link o referencia (opcional)">
+          <button class="bit-add" onclick="addBit('${p.id}',${i})">${icon('plus','i-sm')} Agregar</button>
+        </div>
+      </div>
+      <div class="crit-toggle no-toggle" onclick="this.nextElementSibling.classList.toggle('open')">${icon('chevron','i-sm')} Ver / editar criterios de score</div>
+      <div class="crit-wrap">${scores}</div>
+      <div class="flag">${icon('flag','i-sm')}${ed(esc(o.flag||''),`setObj('${p.id}',${i},'flag',val(this))`,'','Nota / alerta del objetivo...')}</div>
+    </div></div>`;
+}
+function bitListHtml(p,o,i){
+  const b=o.bitacora||[];
+  if(!b.length)return '<div class="bit-empty">Sin registros todavía. Sumá el primer avance del mes ↓</div>';
+  return b.slice().sort((a,c)=>a.mes<c.mes?-1:a.mes>c.mes?1:0).map(e=>{
+    const ev=e.ev?`<span class="ev">${isUrl(e.ev)?`<a href="${esc(e.ev)}" target="_blank" rel="noopener">${esc(e.ev)}</a>`:esc(e.ev)}</span>`:'';
+    return `<div class="bit-entry"><span class="bit-mes">${monthLabel(e.mes)}</span>
+      <div class="bit-txt">${esc(e.txt)}${ev}</div>
+      <button class="mini del" title="Eliminar" onclick="delBit('${p.id}',${i},'${e.id}')">${icon('trash','i-sm')}</button></div>`;
+  }).join('');
+}
+function refreshObjHeader(pid,i){const o=P(pid).pop[i];const est=estMeta(o.estado);
+  const eb=document.getElementById('estbadge-'+pid+'-'+i);if(eb){eb.className='estb '+est.cls;eb.textContent=est.v?est.l:'Sin estado';}
+  const sb=document.getElementById('scbadge-'+pid+'-'+i);if(sb){sb.textContent=o.score?('Score '+o.score):'Sin score';}}
+function refreshSummary(pid){const el=document.getElementById('pop-summary-'+pid);if(el)el.innerHTML=summaryHtml(P(pid));}
+function setObj(pid,i,f,v){P(pid).pop[i][f]=v;saveDB();}
+function setCrit(pid,i,n,v){P(pid).pop[i].scores[n]=v;saveDB();}
+function setEstado(pid,i,v){P(pid).pop[i].estado=v;saveDB();refreshObjHeader(pid,i);refreshSummary(pid);}
+function setScore(pid,i,v){P(pid).pop[i].score=v;saveDB();refreshObjHeader(pid,i);refreshSummary(pid);}
+function addBit(pid,i){
+  const mes=document.getElementById('bitmes-'+pid+'-'+i).value;
+  const txt=document.getElementById('bittxt-'+pid+'-'+i).value.trim();
+  const ev=document.getElementById('bitev-'+pid+'-'+i).value.trim();
+  if(!txt){document.getElementById('bittxt-'+pid+'-'+i).focus();return;}
+  P(pid).pop[i].bitacora.push({id:newId(),mes:mes,txt:txt,ev:ev});saveDB();
+  document.getElementById('bit-'+pid+'-'+i).innerHTML=bitListHtml(P(pid),P(pid).pop[i],i);
+  document.getElementById('bittxt-'+pid+'-'+i).value='';document.getElementById('bitev-'+pid+'-'+i).value='';
+}
+function delBit(pid,i,eid){const o=P(pid).pop[i];o.bitacora=o.bitacora.filter(e=>e.id!==eid);saveDB();document.getElementById('bit-'+pid+'-'+i).innerHTML=bitListHtml(P(pid),o,i);}
+function addObj(pid){P(pid).pop.push({t:'Nuevo objetivo',peso:'',vinc:'',fecha:'',smart:'',scores:{4:'',3:'',2:'',1:''},flag:'',estado:'',score:'',bitacora:[]});saveDB();document.getElementById('tc-pop').innerHTML=renderPop(P(pid));}
+function delObj(pid,i){if(!confirm('¿Eliminar este objetivo?'))return;P(pid).pop.splice(i,1);saveDB();document.getElementById('tc-pop').innerHTML=renderPop(P(pid));}
+function setS1(pid,si,idx,v){P(pid).s1[si][idx]=v;saveDB();}
+function addS1(pid){P(pid).s1.push(['Obj','compromiso...']);saveDB();document.getElementById('tc-pop').innerHTML=renderPop(P(pid));}
+function delS1(pid,si){P(pid).s1.splice(si,1);saveDB();document.getElementById('tc-pop').innerHTML=renderPop(P(pid));}
+
+/* ---------- RENDICIONES ---------- */
+function crossChip(cross,p){
+  if(cross==='none'||!cross)return `<span class="cross none">${icon('dot','i-sm')} Sin cruce POP — operativo</span>`;
+  return cross.map(idx=>`<span class="cross">${icon('link','i-sm')} POP ${idx}</span>`).join(' ');
+}
+function madSelect(pid,ri,ti,cur){
+  const cls=madCls(cur);const opts=['M1','M2','M3','M4','na'].map(v=>`<option value="${v}" ${v===cur?'selected':''}>${v==='na'?'NA':v}</option>`).join('');
+  return `<select class="mat-sel ${cls}" onchange="setMad('${pid}',${ri},${ti},this.value)">${opts}</select>`;
+}
+function sSelect(pid,ri,ti,cur){const opts=['','S1','S2','S3','S4'].map(v=>`<option value="${v}" ${v===(cur||'')?'selected':''}>${v===''?'—':v}</option>`).join('');return `<select class="s-sel" onchange="setLider('${pid}',${ri},${ti},this.value)">${opts}</select>`;}
+function renderRend(p){
+  const hint=`<div class="hint">${icon('book','i-sm')}<span>Rendiciones editables (como el Excel): cambiá títulos y tareas, ajustá <b>madurez (M1–M4)</b> y <b>liderazgo (S1–S4)</b>, y dejá nota de evidencia. Los cambios de madurez se sellan con el mes en curso (${monthLabel(CURRENT_MONTH)}).</span></div>`;
+  return hint+`<div class="rc-list" id="rclist-${p.id}">`+p.rendiciones.map((r,ri)=>renderRendItem(p,r,ri)).join('')+`</div>`+
+    `<button class="addbtn" onclick="addRend('${p.id}')">${icon('plus','i-sm')} Agregar rendición de cuentas</button>`;
+}
+function renderRendItem(p,r,ri){
+  const avg=matAvg(r);const avgTxt=avg?('Madurez prom. M'+(Math.round(avg*10)/10)):'Sin evaluar';
+  const crossEd=[1,2,3,4,5,6].map(n=>{const on=(r.cross!=='none'&&r.cross&&r.cross.indexOf(n)>=0);return `<span class="cx ${on?'on':''}" onclick="toggleCross('${p.id}',${ri},${n})">POP ${n}</span>`;}).join('')+`<span class="cx ${(r.cross==='none'||!r.cross)?'on':''}" onclick="setCrossNone('${p.id}',${ri})">Operativo</span>`;
+  const tasks=r.tasks.map((t,ti)=>renderTask(p,r,ri,t,ti)).join('');
+  return `<div class="rc-item" id="rc-${p.id}-${ri}">
+    <div class="rc-header" onclick="if(!event.target.closest('.no-toggle'))this.parentNode.classList.toggle('open')">
+      <div class="rc-num">${ri+1}</div>
+      <div class="rc-title"><div class="t" id="rct-${p.id}-${ri}">${esc(r.title)}</div>
+        <div class="meta">${crossChip(r.cross,p)}<span class="avgmat" id="rcavg-${p.id}-${ri}">${icon('up','i-sm')} ${avgTxt}</span><span class="avgmat">${r.tasks.length} tareas</span></div></div>
+      <button class="mini del no-toggle" title="Eliminar rendición" onclick="delRend('${p.id}',${ri})">${icon('trash','i-sm')}</button>
+      ${icon('chevron','chev')}
+    </div>
+    <div class="rc-body">
+      <div class="edit-row"><span class="lbl">Rendición</span>${ed(esc(r.title),`setRendTitle('${p.id}',${ri},val(this))`,'rtitle-edit')}</div>
+      <div class="edit-row"><span class="lbl">Cruce POP</span><span class="cross-editor">${crossEd}</span></div>
+      <div id="tasks-${p.id}-${ri}">${tasks}</div>
+      <button class="addbtn" style="margin-top:10px" onclick="addTask('${p.id}',${ri})">${icon('plus','i-sm')} Agregar tarea</button>
+    </div></div>`;
+}
+function renderTask(p,r,ri,t,ti){
+  const baseRef=(t.m0&&t.m0!==t.m)?`<span class="mprog">base ${t.m0} ${icon('arrow','i-sm')}</span>`:'';
+  const exp=(t.exp!==undefined)?`<div class="exp">${ed(esc(t.exp||''),`setTask('${p.id}',${ri},${ti},'exp',val(this))`,'','Qué esperamos lograr...')}</div>`:'';
+  const obs=(t.note!==undefined)?`<div class="task-obs">${icon('alert','i-sm')}${ed(esc(t.note||''),`setTask('${p.id}',${ri},${ti},'note',val(this))`,'','Observación...')}</div>`:'';
+  const stamp=t.mes?`<span class="stamp" id="stamp-${p.id}-${ri}-${ti}">${monthLabel(t.mes)}</span>`:`<span class="stamp" id="stamp-${p.id}-${ri}-${ti}"></span>`;
+  return `<div class="task" id="task-${p.id}-${ri}-${ti}">
+    <div class="task-badges">${baseRef}${madSelect(p.id,ri,ti,t.m)}${sSelect(p.id,ri,ti,t.s)}</div>
+    <div class="task-body">
+      <div class="txt">${ed(esc(t.t),`setTask('${p.id}',${ri},${ti},'t',val(this))`,'','Tarea...')}</div>${exp}${obs}
+      <div class="tasknote"><input value="${esc(t.evNote||'')}" placeholder="Nota / evidencia de madurez..." onchange="setEvNote('${p.id}',${ri},${ti},this.value)">${stamp}</div>
+      <div class="task-tools"><button class="mini del" title="Eliminar tarea" onclick="delTask('${p.id}',${ri},${ti})">${icon('trash','i-sm')}</button></div>
+    </div></div>`;
+}
+function refreshRendItem(pid,ri){const p=P(pid);const el=document.getElementById('rc-'+pid+'-'+ri);if(el){const open=el.classList.contains('open');el.outerHTML=renderRendItem(p,p.rendiciones[ri],ri);if(open)document.getElementById('rc-'+pid+'-'+ri).classList.add('open');}}
+function refreshRendList(pid){document.getElementById('rclist-'+pid).innerHTML=P(pid).rendiciones.map((r,ri)=>renderRendItem(P(pid),r,ri)).join('');}
+function refreshRendAvg(pid,ri){const p=P(pid);const avg=matAvg(p.rendiciones[ri]);const el=document.getElementById('rcavg-'+pid+'-'+ri);if(el)el.innerHTML=icon('up','i-sm')+' '+(avg?('Madurez prom. M'+(Math.round(avg*10)/10)):'Sin evaluar');}
+function setRendTitle(pid,ri,v){P(pid).rendiciones[ri].title=v;saveDB();const el=document.getElementById('rct-'+pid+'-'+ri);if(el)el.innerText=v;}
+function setTask(pid,ri,ti,f,v){P(pid).rendiciones[ri].tasks[ti][f]=v;saveDB();}
+function setMad(pid,ri,ti,v){const t=P(pid).rendiciones[ri].tasks[ti];t.m=v;t.mes=CURRENT_MONTH;saveDB();const sel=event.target;sel.className='mat-sel '+madCls(v);const st=document.getElementById('stamp-'+pid+'-'+ri+'-'+ti);if(st)st.textContent=monthLabel(CURRENT_MONTH);refreshRendAvg(pid,ri);}
+function setLider(pid,ri,ti,v){P(pid).rendiciones[ri].tasks[ti].s=v;saveDB();}
+function setEvNote(pid,ri,ti,v){const t=P(pid).rendiciones[ri].tasks[ti];t.evNote=v;if(!t.mes)t.mes=CURRENT_MONTH;saveDB();const st=document.getElementById('stamp-'+pid+'-'+ri+'-'+ti);if(st&&!st.textContent)st.textContent=monthLabel(t.mes);}
+function toggleCross(pid,ri,n){const r=P(pid).rendiciones[ri];if(r.cross==='none'||!r.cross)r.cross=[];const k=r.cross.indexOf(n);if(k>=0)r.cross.splice(k,1);else r.cross.push(n);r.cross.sort((a,b)=>a-b);if(!r.cross.length)r.cross='none';saveDB();refreshRendItem(pid,ri);}
+function setCrossNone(pid,ri){P(pid).rendiciones[ri].cross='none';saveDB();refreshRendItem(pid,ri);}
+function addTask(pid,ri){P(pid).rendiciones[ri].tasks.push({t:'Nueva tarea',m:'na',s:''});saveDB();document.getElementById('tasks-'+pid+'-'+ri).innerHTML=P(pid).rendiciones[ri].tasks.map((t,ti)=>renderTask(P(pid),P(pid).rendiciones[ri],ri,t,ti)).join('');refreshRendAvg(pid,ri);}
+function delTask(pid,ri,ti){P(pid).rendiciones[ri].tasks.splice(ti,1);saveDB();document.getElementById('tasks-'+pid+'-'+ri).innerHTML=P(pid).rendiciones[ri].tasks.map((t,i2)=>renderTask(P(pid),P(pid).rendiciones[ri],ri,t,i2)).join('');refreshRendAvg(pid,ri);}
+function addRend(pid){P(pid).rendiciones.push({title:'Nueva rendición de cuentas',cross:'none',tasks:[{t:'Nueva tarea',m:'na',s:''}]});saveDB();refreshRendList(pid);const els=document.querySelectorAll('#rclist-'+pid+' .rc-item');if(els.length)els[els.length-1].classList.add('open');}
+function delRend(pid,ri){if(!confirm('¿Eliminar esta rendición y sus tareas?'))return;P(pid).rendiciones.splice(ri,1);saveDB();refreshRendList(pid);}
+
+/* ---------- PERFIL ---------- */
+function renderPerfil(p){
+  const maxv=Math.max(3,...PDIMS.map(d=>p.perfil[d]||0));
+  const motiv=PDIMS.map(d=>`<div class="motiv-row"><div class="ml">${d}</div>
+      <div class="motiv-track"><div class="motiv-fill" style="width:${((p.perfil[d]||0)/maxv)*100}%"></div></div>
+      <div class="mv"><input type="number" min="0" max="5" value="${p.perfil[d]||0}" onchange="setMotiv('${p.id}','${d}',this.value)"></div></div>`).join('');
+  const dom=PDIMS.filter(d=>p.perfil[d]>0).sort((a,b)=>p.perfil[b]-p.perfil[a]).slice(0,2);
+  const strat=dom.length?dom.map(d=>`<li>${icon('spark','i-sm')}<span><b style="color:var(--text-primary)">${d}:</b> ${PERFILES[d]?PERFILES[d].e:''}</span></li>`).join(''):'<li style="color:var(--text-muted)">Cargá los puntajes para ver estrategias sugeridas.</li>';
+  const motivPanel=`<div class="panel"><h3>${icon('profile','i-sm')} Perfil motivacional <span style="font-weight:400;color:var(--text-muted);font-size:11px">(0–3)</span></h3>${motiv}
+    <div class="strat"><div class="sl">Cómo motivarlo</div><ul>${strat}</ul></div></div>`;
+  const gapsPanel=`<div class="panel"><h3>${icon('alert','i-sm')} Brechas y riesgos a gestionar</h3>
+    <div class="gap-list" id="gaps-${p.id}">${p.gaps.map((g,gi)=>gapHtml(p,g,gi)).join('')||'<div style="font-size:12px;color:var(--text-muted)">Sin brechas cargadas.</div>'}</div>
+    <button class="addbtn" style="margin-top:12px" onclick="addGap('${p.id}')">${icon('plus','i-sm')} Agregar brecha</button></div>`;
+  const liderNote=`<div class="lider-note"><div class="ll">${icon('alert','i-sm')} Nota del líder — cómo abordarlo</div><p>${ed(esc(p.liderNote||''),`setP('${p.id}','liderNote',val(this))`,'','Nota del líder...')}</p></div>`;
+  const xrows=p.rendiciones.map((r,ri)=>{const cr=(r.cross==='none'||!r.cross)?'<span class="no">Sin cruce (operativo)</span>':r.cross.map(i=>'<span class="yes">POP '+i+'</span>').join(', ');return `<tr><td>${ri+1}. ${esc(r.title)}</td><td>${cr}</td></tr>`;}).join('');
+  const xmap=`<div class="panel xmap" style="grid-column:1/-1"><h3>${icon('link','i-sm')} Cruces rendiciones ↔ POP 2026/27</h3>
+    <table><thead><tr><th>Rendición de cuentas</th><th>Objetivo POP vinculado</th></tr></thead><tbody>${xrows||'<tr><td colspan="2" style="color:var(--text-muted)">Sin rendiciones.</td></tr>'}</tbody></table></div>`;
+  return `<div class="perfil-grid">${motivPanel}${gapsPanel}</div>${liderNote}<div class="perfil-grid" style="margin-top:14px">${xmap}</div>`;
+}
+function gapHtml(p,g,gi){return `<div class="gap-item"><button class="mini del gdel" onclick="delGap('${p.id}',${gi})">${icon('close','i-sm')}</button>
+    <div class="gt">${ed(esc(g.gt),`setGap('${p.id}',${gi},'gt',val(this))`,'','Título de la brecha')}</div>
+    <div class="gd">${ed(esc(g.gd),`setGap('${p.id}',${gi},'gd',val(this))`,'','Descripción')}</div>
+    <div class="ge">${ed(esc(g.ge||''),`setGap('${p.id}',${gi},'ge',val(this))`,'','Ejemplo / cómo cerrarla')}</div></div>`;}
+function setMotiv(pid,d,v){P(pid).perfil[d]=parseInt(v)||0;saveDB();document.getElementById('tc-perfil').innerHTML=renderPerfil(P(pid));}
+function setGap(pid,gi,f,v){P(pid).gaps[gi][f]=v;saveDB();}
+function addGap(pid){P(pid).gaps.push({gt:'Nueva brecha',gd:'',ge:''});saveDB();document.getElementById('gaps-'+pid).innerHTML=P(pid).gaps.map((g,gi)=>gapHtml(P(pid),g,gi)).join('');}
+function delGap(pid,gi){P(pid).gaps.splice(gi,1);saveDB();document.getElementById('gaps-'+pid).innerHTML=P(pid).gaps.map((g,gi2)=>gapHtml(P(pid),g,gi2)).join('')||'<div style="font-size:12px;color:var(--text-muted)">Sin brechas cargadas.</div>';}
+
+/* ===================== REPORTE MENSUAL ===================== */
+function openReport(){
+  document.getElementById('reportBody').innerHTML=`
+    <div class="modal-head"><h2>${icon('chart')} Reporte mensual de evidencia</h2>
+      <select id="reportMonth" onchange="renderReport(this.value)">${MONTHS.map(mo=>`<option value="${mo.v}" ${mo.v===CURRENT_MONTH?'selected':''}>${mo.l}</option>`).join('')}</select>
+      <button class="close" onclick="closeReport()">${icon('close')}</button></div>
+    <div id="reportContent"></div>`;
+  renderReport(CURRENT_MONTH);document.getElementById('reportOverlay').classList.add('open');
+}
+function closeReport(){document.getElementById('reportOverlay').classList.remove('open');}
+function renderReport(mes){
+  const html=DB.personas.map(p=>{
+    const objs=(p.pop||[]).map((o,i)=>{
+      const est=estMeta(o.estado);const entries=(o.bitacora||[]).filter(e=>e.mes===mes);
+      const evs=entries.length?entries.map(e=>`<div class="rep-ev">${esc(e.txt)}${e.ev?` <span class="ev">· ${isUrl(e.ev)?`<a href="${esc(e.ev)}" target="_blank" rel="noopener">${esc(e.ev)}</a>`:esc(e.ev)}</span>`:''}</div>`).join(''):`<div class="rep-none">Sin evidencia cargada este mes.</div>`;
+      return `<div class="rep-obj"><div class="roh"><span class="estb ${est.cls}">${est.v?est.l:'Sin estado'}</span><span class="rot">${i+1}. ${esc(o.t)}</span><span class="tagx">${o.score?('Score '+o.score):'—'}</span></div>${evs}</div>`;
+    }).join('');
+    const madUpd=[];(p.rendiciones||[]).forEach((r,ri)=>{(r.tasks||[]).forEach(t=>{if(t.mes===mes&&(t.evNote||t.m)){madUpd.push(`R${ri+1} · ${esc(r.title)}: ${esc(t.m||'')}${t.evNote?(' — '+esc(t.evNote)):''}`);}});});
+    const madBlock=madUpd.length?`<div class="rep-mat"><b>Madurez actualizada este mes:</b><br>${madUpd.join('<br>')}</div>`:'';
+    return `<div class="rep-person"><h4><span class="initials" style="width:30px;height:30px;font-size:11px">${esc(p.ini)}</span> ${esc(p.nombre)}</h4>${objs||'<div class="rep-none">Sin objetivos.</div>'}${madBlock}</div>`;
+  }).join('');
+  document.getElementById('reportContent').innerHTML=html;
+}
+
+/* ===================== EXPORT / IMPORT / RESET ===================== */
+function doExport(){
+  const payload={app:'stine-tablero-gestion',version:2,exportedMonth:CURRENT_MONTH,db:DB};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='tablero_stine_2026_27.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function doImport(input){
+  const file=input.files&&input.files[0];if(!file)return;const reader=new FileReader();
+  reader.onload=function(){try{const data=JSON.parse(reader.result);const d=data&&data.db?data.db:data;
+    if(d&&d.personas){DB=d;normalize(DB);saveDB();activeSheet='equipo';renderSheets();renderSheet();alert('Tablero importado correctamente.');}
+    else alert('El archivo no tiene el formato esperado.');}catch(e){alert('No se pudo leer el archivo: '+e.message);}input.value='';};
+  reader.readAsText(file);
+}
+function resetAll(){if(!confirm('¿Restaurar los datos base y borrar tus cambios guardados? (Exportá antes si querés conservarlos)'))return;DB={personas:clone(DEFAULT_PERSONAS),gd:clone(DEFAULT_GD),version:2};normalize(DB);saveDB();activeSheet='equipo';renderSheets();renderSheet();}
+
+/* ===================== MODELO (LEGEND) ===================== */
+function openLegend(){
+  document.getElementById('modalBody').innerHTML=`
+    <div class="modal-head"><h2>${icon('chart')} Modelo de gestión</h2><button class="close" onclick="closeLegend()">${icon('close')}</button></div>
+    <h3>${icon('up','i-sm')} Madurez — la escalera de delegación</h3>
+    <div class="ladder">${LADDER.map(l=>`<div class="rung"><span class="rc mbadge ${l.cls}">${l.c}</span><div class="rt">${l.t}</div><div class="rd">${l.d}</div></div>`).join('')}</div>
+    <h3>${icon('users','i-sm')} Estilo de liderazgo (situacional)</h3>
+    <div class="ladder">${STYLES.map(s=>`<div class="rung"><span class="rc sbadge">${s.c}</span><div class="rt">${s.t}</div><div class="rd">${s.d}</div></div>`).join('')}</div>
+    <h3>${icon('profile','i-sm')} Perfiles motivacionales</h3>
+    <div class="prof-grid">${Object.keys(PERFILES).map(k=>`<div class="prof"><div class="pn">${k}</div><div class="pd">${PERFILES[k].d}</div><div class="pe"><b>Estrategia:</b> ${PERFILES[k].e}</div></div>`).join('')}</div>`;
+  document.getElementById('overlay').classList.add('open');
+}
+function closeLegend(){document.getElementById('overlay').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLegend();closeReport();}});
+
+/* ===================== INIT ===================== */
+document.getElementById('foot').innerHTML=
+  'Tablero de Gestión de Equipo · Marketing Stine · Campaña 2026/27 — Confidencial, uso interno CMO. '+
+  'Cada empleado tiene su hoja (POP, rendiciones, perfil) y hay una vista macro del equipo. Todo es editable estilo Excel y se guarda en este navegador. '+
+  'Usá <code>Exportar</code> para respaldar/compartir, <code>Importar</code> para restaurar, y <code>Restaurar</code> para volver a los datos base.';
+renderSheets();renderSheet();
+</script>
+</body>
+</html>
