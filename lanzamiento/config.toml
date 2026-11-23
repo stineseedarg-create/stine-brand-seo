@@ -1,0 +1,167 @@
+# ─────────────────────────────────────────────────────────────
+#  VIDEO DE LANZAMIENTO – GREEN FRIDAY STINE (sale el 25/11)
+#  Editá textos, tiempos y posiciones acá y volvé a renderizar:
+#      python3 render.py                 → video + cuadro final
+#      python3 render.py --test 2.3,9.5  → solo cuadros de prueba
+#  Tiempos en segundos. Posiciones en píxeles sobre 1080x1920.
+#  Colores en hexadecimal (#RRGGBB).
+# ─────────────────────────────────────────────────────────────
+
+[salida]
+video        = "salida/lanzamiento-green-friday-9x16.mp4"
+cuadro_final = "salida/lanzamiento-cuadro-final.png"
+ancho    = 1080
+alto     = 1920
+fps      = 30
+duracion = 13.0
+
+[fondo]
+imagen      = "assets/estudio_vacio.png"
+linea_piso  = 1555    # y donde la pared toca el piso
+horizonte   = 1000    # altura de los ojos de la cámara (define la perspectiva del piso)
+focal       = 1000
+
+[puerta]                # se abre fuera de cuadro, a la izquierda
+inicio      = 0.0
+apertura    = 1.6       # cuánto tarda en abrirse del todo
+intensidad  = 0.55      # más baja que el haz principal de la foto, para que no compitan
+neblina     = 0.55      # rayos y neblina a contraluz
+polvo       = 0.45
+color       = "#FFD9A8" # luz cálida
+
+[cruces]                # cinta blanca en el piso, una por bolsa
+brazo  = 30             # largo de cada brazo (unidades de piso)
+grosor = 2.6
+
+# Bolsas en orden de llegada. x = centro en pantalla; la base de todas está en [bolsas_comun].
+[bolsas_comun]
+base_y  = 1690          # y de la base de las bolsas (sobre las cruces)
+alto_px = 600           # alto de cada bolsa en pantalla
+
+[[bolsas]]
+archivo = "assets/bolsa_9820.png"
+nombre  = "ST 9820 CL VIP3"
+x       = 210           # cruz de la izquierda
+aparece = 2.3
+
+[[bolsas]]
+archivo = "assets/bolsa_9742.png"   # esta bolsa NO lleva el logo de Viptera3
+nombre  = "ST 9742 RG"
+x       = 540           # cruz del centro
+aparece = 3.7
+
+[[bolsas]]
+archivo = "assets/bolsa_9734.png"
+nombre  = "ST 9734 VIP3"
+x       = 870           # cruz de la derecha
+aparece = 5.1
+
+[flashes]
+intensidad = 1.0
+# además de un flash por cada bolsa, esta ráfaga de "sesión de fotos":
+rafaga = [6.6, 6.85, 7.0, 7.4, 7.55, 8.0, 8.25, 8.4, 8.8]
+
+[camara]                # acercamiento lento
+zoom_desde = 5.8
+zoom_hasta = 13.0
+zoom_max   = 1.07
+centro_y   = 1350
+
+[cierre]
+inicio      = 9.0
+desenfoque  = 11        # desenfoque del fondo
+oscurecer   = 0.72      # cuánto se oscurece el fondo (las bolsas quedan abajo, nítidas)
+
+[tipografia]
+titulo = "assets/fonts/Anton.ttf"        # palo seco condensada negrita (como "BUSCAMOS MODELOS")
+fina   = "assets/fonts/Montserrat.ttf"   # palo seco fina (como "idealmente que lleguen tarde")
+
+[colores]
+blanco = "#FFFFFF"
+verde  = "#0BB363"
+
+# Textos del cierre, en orden de aparición (de arriba hacia abajo).
+# fuente: "titulo" o "fina".  peso (solo fina): Light, Regular, Medium, SemiBold.
+[[textos]]
+texto = "NO CONSEGUIMOS MODELOS."
+fuente = "titulo"
+tamano = 84
+color = "blanco"
+y = 300
+aparece = 9.3
+
+[[textos]]
+texto = "LOS HICIMOS NOSOTROS."
+fuente = "titulo"
+tamano = 84
+color = "verde"
+y = 400
+aparece = 9.8
+
+[[textos]]
+texto = "Llegan tarde. Como tiene que ser."
+fuente = "fina"
+peso = "Light"
+tamano = 40
+color = "blanco"
+y = 486
+aparece = 10.3
+
+[[textos]]
+texto = "ST 9820 CL VIP3  ·  ST 9734 VIP3  ·  ST 9742 RG"
+fuente = "fina"
+peso = "Regular"
+tamano = 28
+espaciado = 0.06
+color = "blanco"
+y = 556
+aparece = 10.7
+
+[[textos]]
+texto = "Financiado en dólares a agosto 2027, tasa 0%"
+fuente = "fina"
+peso = "Light"
+tamano = 30
+color = "blanco"
+y = 622
+aparece = 11.1
+
+[[textos]]
+texto = "Del 25/11 al 9/12"
+fuente = "fina"
+peso = "Regular"
+tamano = 30
+espaciado = 0.12
+color = "blanco"
+y = 666
+aparece = 11.1
+
+# Precio (no estaba en el guion final; para usarlo, sacale el "#" a estas líneas)
+# [[textos]]
+# texto = "Desde USD129,99"
+# fuente = "fina"
+# peso = "SemiBold"
+# tamano = 46
+# color = "blanco"
+# y = 680
+# aparece = 11.3
+
+[[imagenes]]            # BLACK tachado + GREEN, FRIDAY
+archivo = "assets/green_black_friday.png"
+ancho   = 540
+y       = 708
+aparece = 11.5
+
+[[imagenes]]            # logo de Stine (el "STINE" negro se pasa a blanco sobre fondo oscuro)
+archivo = "assets/logo_stine.png"
+ancho   = 230
+y       = 946
+aparece = 11.9
+oscuro_a_blanco = true
+
+[sonido]
+activado      = true
+puerta        = true    # chirrido al abrir
+disparos      = true    # disparo + golpe seco en cada bolsa y ráfaga en los flashes
+musica        = true    # entra en el cierre
+volumen_musica = 0.55
