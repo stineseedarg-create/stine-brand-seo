@@ -1,0 +1,136 @@
+# ─────────────────────────────────────────────────────────────
+#  MONTAJE – VIDEO DE LANZAMIENTO GREEN FRIDAY STINE (sale el 25/11)
+#  Las tomas vienen de Higgsfield (ver PROMPTS_HIGGSFIELD.md).
+#  Mientras no estén los clips, se usan las fotos del set como reemplazo.
+#      python3 montaje.py                  → video + cuadro final
+#      python3 montaje.py --test 2.3,10.5  → solo cuadros de prueba
+#  Tiempos en segundos. Posiciones en píxeles sobre 1080x1920.
+# ─────────────────────────────────────────────────────────────
+
+[salida]
+video        = "salida/lanzamiento-green-friday-9x16.mp4"   # con fotos de reemplazo hasta que estén los clips
+cuadro_final = "salida/lanzamiento-cuadro-final.png"
+ancho = 1080
+alto  = 1920
+fps   = 30
+duracion = 13.0
+
+# ── Tomas (en orden). "clip" = MP4 de Higgsfield; si no existe, se usa "foto" con un leve movimiento.
+[[tomas]]
+nombre  = "A · puerta"
+clip    = "clips/A_puerta.mp4"
+foto    = "tomas_originales/05_Detalle_puerta_lateral.jpg"
+inicio  = 0.0
+fin     = 2.0
+desde   = 0.0        # segundo del clip desde donde se usa (para recortar el arranque)
+
+[[tomas]]
+nombre  = "B · set con cruces (placa para las bolsas y el cierre)"
+clip    = "clips/B_set.mp4"
+foto    = "cuadros_para_higgsfield/B_vista_frontal_con_cruces.png"
+inicio  = 2.0
+fin     = 13.0
+desde   = 1.0        # salteamos el primer segundo por si la puerta todavía se está abriendo
+bolsas  = true       # sobre esta toma aparecen las bolsas reales
+
+# ── Bolsas reales (etiquetas exactas), en orden de llegada
+[bolsas_comun]
+base_y = 1700
+alto   = 413
+
+[[bolsas]]
+archivo = "../lanzamiento/assets/bolsa_9820.png"
+nombre  = "ST 9820 CL VIP3"
+x = 240               # cruz de la izquierda
+aparece = 2.3
+
+[[bolsas]]
+archivo = "../lanzamiento/assets/bolsa_9742.png"   # NO lleva el logo de Viptera3
+nombre  = "ST 9742 RG"
+x = 540               # cruz del centro
+aparece = 3.7
+
+[[bolsas]]
+archivo = "../lanzamiento/assets/bolsa_9734.png"
+nombre  = "ST 9734 VIP3"
+x = 840               # cruz de la derecha
+aparece = 5.1
+
+[flashes]
+intensidad = 1.0
+rafaga = [6.6, 6.85, 7.0, 7.4, 7.55, 8.0, 8.25, 8.4, 8.8]
+
+[camara]              # acercamiento lento (sobre la toma B)
+zoom_desde = 6.5
+zoom_hasta = 13.0
+zoom_max   = 1.10
+centro_y   = 1560
+
+[cierre]
+inicio     = 9.0
+desenfoque = 12
+oscurecer  = 0.70
+
+[tipografia]
+# Zuume es de Adobe Fonts y no se puede descargar acá: si tenés el archivo .otf, ponelo en fuentes/ y cambiá esta línea.
+titulo = "fuentes/Anton.ttf"
+fina   = "fuentes/Raleway.ttf"
+
+[colores]
+blanco = "#FFFFFF"
+verde  = "#0BB363"
+
+# Textos del cierre, de arriba hacia abajo y en orden de aparición.
+# fuente: "titulo" o "fina".  peso (fina): Thin, ExtraLight, Light, Regular, Medium...
+[[textos]]
+texto = "NO CONSEGUIMOS MODELOS."
+fuente = "titulo"
+tamano = 90
+color = "blanco"
+y = 360
+aparece = 9.3
+
+[[textos]]
+texto = "LOS HICIMOS NOSOTROS."
+fuente = "titulo"
+tamano = 90
+color = "verde"
+y = 466
+aparece = 9.9
+
+[[textos]]
+texto = "llegan tarde. como tiene que ser."
+fuente = "fina"
+peso = "Light"
+tamano = 44
+color = "blanco"
+y = 560
+aparece = 10.6
+
+[[textos]]
+texto = "financiado en dólares a agosto 2027, tasa 0%"
+fuente = "fina"
+peso = "Regular"
+tamano = 32
+color = "blanco"
+y = 660
+aparece = 11.3
+
+[[textos]]
+texto = "del 25/11 al 9/12"
+fuente = "fina"
+peso = "SemiBold"
+tamano = 32
+espaciado = 0.08
+color = "blanco"
+y = 708
+aparece = 11.3
+
+[sonido]
+activado = true
+puerta   = true
+disparos = true
+musica   = true
+volumen_musica = 0.55
+# Para usar música o efectos propios, poné el archivo acá y se usa en lugar de lo sintetizado:
+archivo  = ""
