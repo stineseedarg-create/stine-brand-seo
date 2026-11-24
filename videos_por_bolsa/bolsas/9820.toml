@@ -1,0 +1,132 @@
+# ─────────────────────────────────────────────────────────────
+#  VIDEO ANIMADO – ST 9820 CL VIP3 · Los Petisos
+#  python3 animado.py bolsas/9820.toml                → salida/stine-9820-9x16.mp4
+#  python3 animado.py bolsas/9820.toml --test 1,2.5   → cuadros de prueba
+#  Tiempos en segundos (cortes cada 0,5 s = 120 BPM, para sumar música a tempo).
+#  centro = punto de la foto (1080x1920) hacia donde mira la cámara. zoom >1 = más cerca.
+#  entrada: "corte" | "enfoque" | "flash" | "whip_izq" | "whip_der" | "whip_arriba" | "whip_abajo"
+#  curva:   "suave" | "snap" (zoom de golpe) | "lineal" | "acelera"
+#  Si agregás clip = "clips/xxx.mp4" (Higgsfield), se usa el clip en lugar de la foto.
+# ─────────────────────────────────────────────────────────────
+[general]
+video = "salida/stine-9820-9x16.mp4"
+
+[efecto]
+desenfoque_max = 28
+duracion_foco = 0.30
+barrido_px = 170
+temblor = 1.4
+golpe_corte = 9
+congelado = 0.14      # cuánto dura el cuadro congelado de cada "foto"
+grano = 0.03
+halo = 0.30
+vineta = 0.30
+fundido_final = 0.35
+
+[sonido]
+# disparos de cámara, barridos y golpes van siempre. Para sumar música: musica = "musica.mp3"
+musica = ""
+volumen_musica = 0.6
+
+# [t, "flash"] = destello · [t, "foto"] = destello + cuadro congelado
+flashes = [[0.5, "foto"], [1.0, "flash"], [2.0, "flash"], [2.25, "foto"], [3.5, "flash"], [4.5, "foto"], [5.0, "flash"], [5.5, "flash"], [5.65, "flash"], [5.8, "foto"], [6.55, "flash"], [6.7, "flash"], [6.85, "foto"], [7.3, "flash"], [7.45, "flash"], [7.8, "foto"], [8.6, "foto"]]
+
+[[tomas]]
+foto = "cuadros/02_9820_frente.png"
+inicio = 0.0
+fin = 1.0
+zoom = [1.0, 1.06]
+centro = [[549, 1036], [549, 1040]]
+giro = [0, 0]
+entrada = "enfoque"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/02_9820_frente.png"
+inicio = 1.0
+fin = 1.5
+zoom = [1.7, 2.2]
+centro = [[549, 790], [549, 760]]
+giro = [0, 0]
+entrada = "flash"
+curva = "snap"
+[[tomas]]
+foto = "cuadros/02_9820_frente.png"
+inicio = 1.5
+fin = 2.0
+zoom = [2.1, 2.2]
+centro = [[470, 1381], [620, 1381]]
+giro = [0, 0]
+entrada = "whip_der"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/03_9820_tres_cuartos.png"
+inicio = 2.0
+fin = 3.0
+zoom = [1.0, 1.08]
+centro = [[640, 1036], [680, 1036]]
+giro = [-4, 0]
+entrada = "whip_izq"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/03_9820_tres_cuartos.png"
+inicio = 3.0
+fin = 3.5
+zoom = [2.0, 2.1]
+centro = [[341, 1560], [341, 1473]]
+giro = [0, 0]
+entrada = "corte"
+curva = "snap"
+[[tomas]]
+foto = "cuadros/04_9820_detalle_cierre.png"
+inicio = 3.5
+fin = 4.25
+zoom = [1.08, 1.15]
+centro = [[420, 900], [660, 880]]
+giro = [0, 0]
+entrada = "flash"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/05_9820_detalle_lateral.png"
+inicio = 4.25
+fin = 5.0
+zoom = [1.15, 1.2]
+centro = [[414, 1300], [380, 950]]
+giro = [0, 0]
+entrada = "whip_arriba"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/02_9820_frente.png"
+inicio = 5.0
+fin = 5.5
+zoom = [2.1, 2.2]
+centro = [[480, 1508], [620, 1508]]
+giro = [0, 0]
+entrada = "whip_der"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/03_9820_tres_cuartos.png"
+inicio = 5.5
+fin = 6.5
+zoom = [1.8, 1.0]
+centro = [[680, 1100], [663, 1036]]
+giro = [0, 0]
+entrada = "flash"
+curva = "snap"
+[[tomas]]
+foto = "cuadros/02_9820_frente.png"
+inicio = 6.5
+fin = 8.5
+zoom = [1.0, 1.09]
+centro = [[549, 1036], [549, 1050]]
+giro = [2, 0]
+entrada = "whip_abajo"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/02_9820_frente.png"
+inicio = 8.5
+fin = 9.6
+zoom = [1.09, 1.12]
+centro = [[549, 1050], [549, 1050]]
+giro = [0, 0]
+entrada = "corte"
+curva = "suave"

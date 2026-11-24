@@ -1,0 +1,141 @@
+# ─────────────────────────────────────────────────────────────
+#  VIDEO ANIMADO – ST 9742 RG · Los Cortos (sin Viptera3)
+#  python3 animado.py bolsas/9742.toml                → salida/stine-9742-9x16.mp4
+#  python3 animado.py bolsas/9742.toml --test 1,2.5   → cuadros de prueba
+#  Tiempos en segundos (cortes cada 0,5 s = 120 BPM, para sumar música a tempo).
+#  centro = punto de la foto (1080x1920) hacia donde mira la cámara. zoom >1 = más cerca.
+#  entrada: "corte" | "enfoque" | "flash" | "whip_izq" | "whip_der" | "whip_arriba" | "whip_abajo"
+#  curva:   "suave" | "snap" (zoom de golpe) | "lineal" | "acelera"
+#  Si agregás clip = "clips/xxx.mp4" (Higgsfield), se usa el clip en lugar de la foto.
+# ─────────────────────────────────────────────────────────────
+[general]
+video = "salida/stine-9742-9x16.mp4"
+
+[efecto]
+desenfoque_max = 28
+duracion_foco = 0.30
+barrido_px = 170
+temblor = 1.4
+golpe_corte = 9
+congelado = 0.14      # cuánto dura el cuadro congelado de cada "foto"
+grano = 0.03
+halo = 0.30
+vineta = 0.30
+fundido_final = 0.35
+
+[sonido]
+# disparos de cámara, barridos y golpes van siempre. Para sumar música: musica = "musica.mp3"
+musica = ""
+volumen_musica = 0.6
+
+# [t, "flash"] = destello · [t, "foto"] = destello + cuadro congelado
+flashes = [[0.5, "foto"], [1.0, "flash"], [2.25, "foto"], [3.75, "flash"], [4.5, "flash"], [5.1, "flash"], [5.25, "flash"], [5.45, "foto"], [6.55, "flash"], [6.7, "flash"], [6.85, "foto"], [7.3, "flash"], [7.45, "flash"], [7.8, "foto"], [8.6, "foto"]]
+
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 0.0
+fin = 1.0
+zoom = [1.0, 1.07]
+centro = [[580, 987], [580, 990]]
+giro = [0, 0]
+entrada = "enfoque"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 1.0
+fin = 1.5
+zoom = [2.2, 2.9]
+centro = [[608, 800], [608, 781]]
+giro = [0, 0]
+entrada = "flash"
+curva = "snap"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 1.5
+fin = 2.0
+zoom = [3.0, 3.1]
+centro = [[520, 1022], [690, 1022]]
+giro = [0, 0]
+entrada = "whip_der"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 2.0
+fin = 2.75
+zoom = [3.1, 3.35]
+centro = [[631, 1290], [631, 1294]]
+giro = [-5, 0]
+entrada = "whip_abajo"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 2.75
+fin = 3.25
+zoom = [3.0, 3.1]
+centro = [[330, 1150], [327, 1051]]
+giro = [0, 0]
+entrada = "whip_izq"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 3.25
+fin = 3.75
+zoom = [3.4, 3.6]
+centro = [[327, 1420], [327, 1441]]
+giro = [0, 0]
+entrada = "corte"
+curva = "snap"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 3.75
+fin = 4.5
+zoom = [2.6, 2.75]
+centro = [[480, 500], [640, 494]]
+giro = [0, 0]
+entrada = "flash"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 4.5
+fin = 5.0
+zoom = [3.6, 3.8]
+centro = [[600, 1217], [660, 1217]]
+giro = [0, 0]
+entrada = "whip_der"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 5.0
+fin = 6.0
+zoom = [2.3, 1.0]
+centro = [[590, 1050], [580, 990]]
+giro = [0, 0]
+entrada = "flash"
+curva = "snap"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 6.0
+fin = 6.5
+zoom = [2.2, 2.35]
+centro = [[574, 1700], [574, 1560]]
+giro = [0, 0]
+entrada = "whip_arriba"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 6.5
+fin = 8.5
+zoom = [1.0, 1.1]
+centro = [[580, 990], [580, 1000]]
+giro = [2, 0]
+entrada = "whip_abajo"
+curva = "suave"
+[[tomas]]
+foto = "cuadros/01_9742_heroe.png"
+inicio = 8.5
+fin = 9.6
+zoom = [1.1, 1.13]
+centro = [[580, 1000], [580, 1000]]
+giro = [0, 0]
+entrada = "corte"
+curva = "suave"
