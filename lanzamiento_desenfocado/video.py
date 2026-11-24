@@ -2,6 +2,7 @@
 Todo se controla desde config.toml.
     python3 video.py                 video + cuadro final
     python3 video.py --test 1.0,5.0  cuadros de prueba en salida/prueba_*.png
+    python3 video.py --sin-texto     versión sin sobreimpresos (archivos con sufijo -sin-texto)
 """
 import argparse, math, os, subprocess, tomllib, wave
 import numpy as np, cv2
@@ -127,9 +128,10 @@ def text_layer():
 TL = text_layer(); TCOL = hex_bgr(TX['color'])
 TSH = cv2.GaussianBlur(TL, (0, 0), 10)
 
+SIN_TEXTO = False
 def frame(t):
     y = film(frame_lin(t), t)
-    k = float(sstep(TX['aparece'], TX['aparece'] + 0.3, t))
+    k = 0.0 if SIN_TEXTO else float(sstep(TX['aparece'], TX['aparece'] + 0.3, t))
     if k > 0:
         y = y * (1 - 0.30 * k * TSH[..., None])
         y = y * (1 - k * TL[..., None]) + k * TL[..., None] * TCOL
@@ -147,8 +149,11 @@ def soundtrack():
     return buf / (np.abs(buf).max() + 1e-9) * 0.8, SR
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(); ap.add_argument('--test'); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument('--test'); ap.add_argument('--sin-texto', action='store_true'); a = ap.parse_args()
     os.makedirs(P('salida'), exist_ok=True)
+    SIN_TEXTO = a.sin_texto
+    suf = '-sin-texto' if SIN_TEXTO else ''
+    C['salida']['video'] = C['salida']['video'].replace('.mp4', suf + '.mp4'); C['salida']['cuadro_final'] = C['salida']['cuadro_final'].replace('.png', suf + '.png')
     if a.test:
         for t in [float(x) for x in a.test.split(',')]: cv2.imwrite(P(f'salida/prueba_{t:05.2f}.png'), frame(t))
         raise SystemExit
