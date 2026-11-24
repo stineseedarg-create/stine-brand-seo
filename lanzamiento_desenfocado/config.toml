@@ -1,0 +1,99 @@
+# ─────────────────────────────────────────────────────────────
+#  LANZAMIENTO GREEN FRIDAY STINE – estilo "desenfocado" (cortes con foco, barridos y luz)
+#      python3 video.py                 → video + cuadro final
+#      python3 video.py --test 1.0,5.0  → cuadros de prueba en salida/
+#  Tiempos en segundos. Posiciones en píxeles sobre 1080x1920.
+#  "centro" de cada toma = punto de la foto (941x1672) hacia donde va la cámara.
+# ─────────────────────────────────────────────────────────────
+
+[salida]
+video        = "salida/green-friday-stine-desenfocado-9x16.mp4"
+cuadro_final = "salida/green-friday-stine-cuadro-final.png"
+ancho = 1080
+alto  = 1920
+fps   = 30
+
+# entrada: "enfoque" (entra desenfocada y hace foco) | "barrido" (entra con barrido de movimiento) | "corte"
+# salida:  "desenfoque" | "barrido" | "luz" (destello cálido de película) | "corte"
+[[tomas]]
+foto = "fotos/1_puerta.png"
+inicio = 0.0
+fin = 1.9
+zoom = [1.00, 1.10]
+centro = [[470, 836], [300, 900]]
+entrada = "enfoque"
+salida = "barrido"
+
+[[tomas]]
+foto = "fotos/1_puerta.png"           # primer plano: la puerta y la primera bolsa
+inicio = 1.9
+fin = 2.6
+zoom = [2.05, 2.25]
+centro = [[175, 900], [195, 905]]
+entrada = "barrido"
+salida = "desenfoque"
+
+[[tomas]]
+foto = "fotos/2_llegan.png"
+inicio = 2.6
+fin = 4.4
+zoom = [1.04, 1.14]
+centro = [[420, 980], [500, 1000]]
+entrada = "enfoque"
+salida = "luz"
+
+[[tomas]]
+foto = "fotos/3_en_fila_corregida.png"
+inicio = 4.4
+fin = 6.1
+zoom = [1.02, 1.12]
+centro = [[480, 960], [480, 990]]
+entrada = "enfoque"
+salida = "barrido"
+
+[[tomas]]
+foto = "fotos/3_en_fila_corregida.png" # detalle de la etiqueta
+inicio = 6.1
+fin = 6.8
+zoom = [1.75, 1.90]
+centro = [[482, 950], [485, 962]]
+entrada = "barrido"
+salida = "luz"
+
+[[tomas]]
+foto = "fotos/4_sesion_corregida.png"
+inicio = 6.8
+fin = 10.5
+zoom = [1.00, 1.09]
+centro = [[470, 900], [478, 930]]
+entrada = "enfoque"
+salida = "corte"
+flashes = [7.6, 7.85, 8.0, 8.5, 8.65]   # flashes de la sesión de fotos
+
+[efecto]
+desenfoque_max = 34     # radio del desenfoque en las transiciones (px)
+duracion_foco  = 0.45   # cuánto tarda en hacer foco al entrar
+duracion_salida = 0.30
+barrido_px     = 140    # largo del barrido de movimiento
+temblor        = 1.6    # cámara en mano (px)
+grano          = 0.035
+halo           = 0.35   # brillo cálido en las luces (look película)
+vineta         = 0.35
+luz_color      = "#FFE6C2"
+
+[texto]                 # fijo durante todo el video, como en la referencia
+fuente_titulo = "fuentes/InterDisplay-Bold.otf"
+fuente_chica  = "fuentes/InterDisplay-Medium.otf"
+titulo   = "GREEN FRIDAY"
+izquierda = "Stine · Maíz"
+derecha   = "Tasa 0% a agosto 2027"
+y_titulo  = 700         # línea base del título
+margen    = 34
+tamano_chico = 46
+color = "#FFFFFF"
+aparece = 0.25          # el texto entra con un fundido corto
+
+[sonido]
+# La referencia usa música; lo más simple es sumarla en Instagram al publicar.
+# Con true se agregan solo los disparos de cámara en los flashes.
+disparos = false
