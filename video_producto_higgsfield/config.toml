@@ -1,0 +1,95 @@
+# ─────────────────────────────────────────────────────────────
+#  VIDEO DE PRODUCTO STINE – tomas de Higgsfield + montaje con foco y luz
+#  1. Generá en Higgsfield las tomas de PROMPTS_HIGGSFIELD.md y guardalas en clips/ con estos nombres.
+#  2. python3 montaje.py   → salida/stine-producto-9x16.mp4 + cuadro final
+#  Si falta un clip, se usa el cuadro de inicio con un movimiento lento (animatic).
+#  "desde" = segundo del clip desde donde se usa. Tiempos en segundos.
+# ─────────────────────────────────────────────────────────────
+
+[salida]
+video        = "salida/stine-producto-9x16.mp4"
+cuadro_final = "salida/stine-producto-cuadro-final.png"
+ancho = 1080
+alto  = 1920
+fps   = 30
+
+[[tomas]]                         # 1 · héroe ST 9734: entra la luz
+clip  = "clips/01_9734_heroe.mp4"
+foto  = "cuadros_inicio/01_9734_heroe.png"
+desde = 0.5
+inicio = 0.0
+fin    = 2.6
+zoom = [1.00, 1.08]
+centro = [[470, 836], [470, 860]]
+entrada = "enfoque"
+salida  = "barrido"
+
+[[tomas]]                         # 2 · ST 9820 CL de frente
+clip  = "clips/02_9820_frente.mp4"
+foto  = "cuadros_inicio/02_9820_frente.png"
+desde = 0.5
+inicio = 2.6
+fin    = 4.6
+zoom = [1.00, 1.07]
+centro = [[540, 960], [540, 990]]
+entrada = "barrido"
+salida  = "desenfoque"
+
+[[tomas]]                         # 3 · giro a tres cuartos
+clip  = "clips/03_9820_tres_cuartos.mp4"
+foto  = "cuadros_inicio/03_9820_tres_cuartos.png"
+desde = 0.5
+inicio = 4.6
+fin    = 6.8
+zoom = [1.04, 1.12]
+centro = [[540, 960], [560, 960]]
+entrada = "enfoque"
+salida  = "luz"
+
+[[tomas]]                         # 4 · detalle del cierre cosido
+clip  = "clips/04_9820_detalle_cierre.mp4"
+foto  = "cuadros_inicio/04_9820_detalle_cierre.png"
+desde = 0.3
+inicio = 6.8
+fin    = 8.2
+zoom = [1.00, 1.10]
+centro = [[540, 900], [600, 880]]
+entrada = "enfoque"
+salida  = "barrido"
+
+[[tomas]]                         # 5 · detalle del lateral (logo + 80.000 semillas)
+clip  = "clips/05_9820_detalle_lateral.mp4"
+foto  = "cuadros_inicio/05_9820_detalle_lateral.png"
+desde = 0.3
+inicio = 8.2
+fin    = 9.8
+zoom = [1.06, 1.00]
+centro = [[460, 1150], [480, 1100]]
+entrada = "barrido"
+salida  = "luz"
+
+[[tomas]]                         # 6 · cierre: vuelve al héroe
+clip  = "clips/01_9734_heroe.mp4"
+foto  = "cuadros_inicio/01_9734_heroe.png"
+desde = 3.0
+inicio = 9.8
+fin    = 12.0
+zoom = [1.10, 1.00]
+centro = [[470, 900], [470, 836]]
+entrada = "enfoque"
+salida  = "desenfoque"
+
+[efecto]
+desenfoque_max = 30
+duracion_foco  = 0.45
+duracion_salida = 0.30
+barrido_px     = 130
+temblor        = 1.2
+grano          = 0.03
+halo           = 0.30
+vineta         = 0.30
+luz_color      = "#FFE6C2"
+
+# Sin textos sobreimpresos. Para agregar uno, completá "titulo" (y los demás campos):
+[texto]
+titulo = ""
