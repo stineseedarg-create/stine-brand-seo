@@ -34,7 +34,7 @@ entrada = "barrido"
 salida = "desenfoque"
 
 [[tomas]]
-foto = "fotos/2_llegan.png"
+foto = "fotos/2_llegan_orden.png"
 inicio = 2.6
 fin = 4.4
 zoom = [1.04, 1.14]
@@ -43,7 +43,7 @@ entrada = "enfoque"
 salida = "luz"
 
 [[tomas]]
-foto = "fotos/3_en_fila_corregida.png"
+foto = "fotos/3_en_fila_orden.png"
 inicio = 4.4
 fin = 6.1
 zoom = [1.02, 1.12]
@@ -52,7 +52,7 @@ entrada = "enfoque"
 salida = "barrido"
 
 [[tomas]]
-foto = "fotos/3_en_fila_corregida.png" # detalle de la etiqueta
+foto = "fotos/3_en_fila_orden.png" # detalle de la etiqueta
 inicio = 6.1
 fin = 6.8
 zoom = [1.75, 1.90]
@@ -61,7 +61,7 @@ entrada = "barrido"
 salida = "luz"
 
 [[tomas]]
-foto = "fotos/4_sesion_corregida.png"
+foto = "fotos/4_sesion_orden.png"
 inicio = 6.8
 fin = 10.5
 zoom = [1.00, 1.09]
